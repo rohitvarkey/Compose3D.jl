@@ -13,13 +13,17 @@ function draw(backend::Backend, root_canvas::Context)
     # Also use the resolve method to convert relative measures to absolute ones.
     # Hack try for now.
     children = root_canvas.children
-    box = root_canvas.box
-    # Resolve the parent box here.
+    parent_box = root_canvas.box
+    #Assert if parent box has absolute values.
     for child in children
     	if isa(child,Geometry)
     		for primitive in child.primitives
-    			backend = draw(backend,box,primitive)
+    			backend = draw(backend,parent_box,primitive)
     		end
+    	end
+    	if isa(child, Context)
+    		child = Context(resolve(parent_box,child.box),child.children)
+    		backend = draw(backend,child)
     	end
     end
     return backend

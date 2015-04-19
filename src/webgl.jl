@@ -52,6 +52,22 @@ function draw(backend::WebGL, sphere::SpherePrimitive)
     return WebGL(backend.divId, new_html)
 end
 
+function draw(backend::WebGL, pyramid::PyramidPrimitive)
+	height = pyramid.height.value
+	base = pyramid.base.value
+    x = pyramid.corner.x[1].value
+    y = pyramid.corner.x[2].value
+    z = pyramid.corner.x[3].value
+    pyramidId= rand(1000:10000000)
+    new_html = 
+    """
+ 	$(backend.html)
+    var pyramid$(pyramidId) = getPyramid($x,$y,$z,$base,$height)
+    shapes.push(pyramid$(pyramidId))
+    """
+    return WebGL(backend.divId, new_html)
+end
+
 function writemime(io::IO,mime::MIME{symbol("text/html")},webglInst::WebGL)
 	html = 
 	"""

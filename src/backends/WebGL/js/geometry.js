@@ -55,3 +55,32 @@ var getSphere = function(x,y,z,radius,col,texturemap){
 	return sphere;
 }
 	
+var getPyramid = function(x,y,z,base,height,fillColor,outlineColor){
+  
+  fillColor = fillColor || 0xffffff;
+  outlineColor = outlineColor || 0xffffff;
+  var geometry = new THREE.Geometry();
+
+  geometry.vertices.push(new THREE.Vector3(x,y,z));
+  geometry.vertices.push(new THREE.Vector3(x+base,y,z));
+  geometry.vertices.push(new THREE.Vector3(x+base,y+base,z));
+  geometry.vertices.push(new THREE.Vector3(x,y+base,z));
+  geometry.vertices.push(new THREE.Vector3(x+base/2,y+base/2,z+height));
+
+  geometry.faces.push(new THREE.Face3(0, 1, 4));
+  geometry.faces.push(new THREE.Face3(1, 2, 4));
+  geometry.faces.push(new THREE.Face3(3, 4, 2));
+  geometry.faces.push(new THREE.Face3(3, 0, 4));
+  geometry.faces.push(new THREE.Face3(3, 0, 4));
+  geometry.faces.push(new THREE.Face3(0,2,1));
+  geometry.faces.push(new THREE.Face3(0,3,2));
+
+  var filling = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({color: fillColor}));
+  var wireframe = new THREE.WireframeHelper( filling, outlineColor);
+
+  pyramid = new THREE.Group();
+  pyramid.add(filling,wireframe);
+  pyramid.move= function(){};
+  
+  return pyramid;
+}

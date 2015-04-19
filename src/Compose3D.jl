@@ -37,6 +37,6 @@ end
 
 #exporting types and functions to be used by the user on importing the module
 export Point, Length, BoundingBox, AbsoluteBox, Context, mm, cm, inch, pt, w, h, d, CubePrimitive, Cube, cube, compose, draw, WebGL, webgl,
-	   Sphere, sphere
+	   Sphere, sphere, Pyramid, pyramid
 
 end # module

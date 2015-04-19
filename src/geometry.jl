@@ -46,3 +46,26 @@ function resolve(box::Absolute3DBox, sphere::SpherePrimitive)
 	absRadius = resolve(box, sphere.radius)mm
 	return SpherePrimitive(absCenter,absRadius)
 end
+
+#Pyramid
+
+immutable PyramidPrimitive <: GeometryPrimitive
+	corner::Point{3}
+	base::Length
+	height::Length
+end
+
+typealias Pyramid Geometry{PyramidPrimitive}
+
+PyramidPrimitive(x::Length,y::Length,z::Length,base::Length,height::Length) = PyramidPrimitive(Point(x,y,z),base,height)
+
+function pyramid(x::Length,y::Length,z::Length,base::Length, height::Length)
+	return Pyramid([PyramidPrimitive(x::Length,y::Length,z::Length,base::Length,height::Length)])
+end
+
+function resolve(box::Absolute3DBox, pyramid::PyramidPrimitive)
+	absCorner = Point(resolve(box,pyramid.corner))
+	absBase = resolve(box, pyramid.base)mm
+	absHeight = resolve(box, pyramid.height)mm
+	return PyramidPrimitive(absCorner,absBase,absHeight)
+end

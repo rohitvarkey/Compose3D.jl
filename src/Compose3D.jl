@@ -19,9 +19,9 @@ include("webgl.jl")
 
 #Setting up three js files required to display stuff.
 #TODO: Do this only if the MIME is "text/html"
-threejsFile = open("WebGL/js/three.min.js")
-mainjsFile = open("WebGL/js/main.js")
-geometryjsFile = open("WebGL/js/geometry.js")
+threejsFile = open("/home/rohitvarkey/.julia/v0.3/Compose3D/src/backends/WebGL/js/three.min.js")
+mainjsFile = open("/home/rohitvarkey/.julia/v0.3/Compose3D/src/backends/WebGL/js/main.js")
+geometryjsFile = open("/home/rohitvarkey/.julia/v0.3/Compose3D/src/backends/WebGL/js/geometry.js")
 threejs = readall(threejsFile);
 mainjs = readall(mainjsFile);
 geometryjs = readall(geometryjsFile);
@@ -36,6 +36,7 @@ function writemime(io::IO,mime::MIME{symbol("text/html")},ctx::Context)
 end
 
 #exporting types and functions to be used by the user on importing the module
-export Point, Length, BoundingBox, AbsoluteBox, Context, mm, cm, inch, pt, w, h, d, CubePrimitive, Cube, cube, compose, draw, WebGL, webgl
+export Point, Length, BoundingBox, AbsoluteBox, Context, mm, cm, inch, pt, w, h, d, CubePrimitive, Cube, cube, compose, draw, WebGL, webgl,
+	   Sphere, sphere
 
 end # module

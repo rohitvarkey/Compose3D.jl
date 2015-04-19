@@ -50,7 +50,7 @@ var getSphere = function(x,y,z,radius,col,texturemap){
 	
 	sphere.revolve_theta=0;
 	
-	sphere.position.set(sphere.revolve_x,y,z);
+	sphere.position.set(x,y,z);
 	
 	return sphere;
 }

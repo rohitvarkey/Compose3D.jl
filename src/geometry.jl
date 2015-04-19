@@ -25,3 +25,24 @@ function resolve(box::Absolute3DBox, cube::CubePrimitive)
 	absSide = resolve(box, cube.side)mm
 	return CubePrimitive(absCorner,absSide)
 end
+
+#Sphere
+
+immutable SpherePrimitive <: GeometryPrimitive
+	center::Point{3}
+	radius::Length
+end
+
+typealias Sphere Geometry{SpherePrimitive}
+
+SpherePrimitive(x::Length,y::Length,z::Length,radius::Length) = SpherePrimitive(Point(x,y,z),radius)
+
+function sphere(x::Length,y::Length,z::Length,radius::Length)
+	return Sphere([SpherePrimitive(x::Length,y::Length,z::Length,radius::Length)])
+end
+
+function resolve(box::Absolute3DBox, sphere::SpherePrimitive)
+	absCenter = Point(resolve(box,sphere.center))
+	absRadius = resolve(box, sphere.radius)mm
+	return SpherePrimitive(absCenter,absRadius)
+end

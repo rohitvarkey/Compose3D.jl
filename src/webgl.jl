@@ -37,6 +37,21 @@ function draw(backend::WebGL, cube::CubePrimitive)
     return WebGL(backend.divId, new_html)
 end
 
+function draw(backend::WebGL, sphere::SpherePrimitive)
+	radius = sphere.radius.value
+    x = sphere.center.x[1].value
+    y = sphere.center.x[2].value
+    z = sphere.center.x[3].value
+    sphereId= rand(1000:10000000)
+    new_html = 
+    """
+ 	$(backend.html)
+    var sphere$(sphereId) = getSphere($x,$y,$z,$radius)
+    shapes.push(sphere$(sphereId))
+    """
+    return WebGL(backend.divId, new_html)
+end
+
 function writemime(io::IO,mime::MIME{symbol("text/html")},webglInst::WebGL)
 	html = 
 	"""

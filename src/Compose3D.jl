@@ -19,14 +19,14 @@ include("webgl.jl")
 
 #Setting up three js files required to display stuff.
 #TODO: Do this only if the MIME is "text/html"
-threejsFile = open("/home/rohitvarkey/.julia/v0.3/Compose3D/src/backends/WebGL/js/three.min.js")
-mainjsFile = open("/home/rohitvarkey/.julia/v0.3/Compose3D/src/backends/WebGL/js/main.js")
-geometryjsFile = open("/home/rohitvarkey/.julia/v0.3/Compose3D/src/backends/WebGL/js/geometry.js")
-trackballjsFile = open("/home/rohitvarkey/.julia/v0.3/Compose3D/src/backends/WebGL/js/trackball.js")
-threejs = readall(threejsFile);
-mainjs = readall(mainjsFile);
-geometryjs = readall(geometryjsFile);
-trackballjs = readall(trackballjsFile);
+
+asset(url) = readall(Pkg.dir("Compose3D", "src", "backends", "WebGL", "js", url))
+
+threejs = asset("three.min.js")
+mainjs = asset("main.js")
+geometryjs = asset("geometry.js")
+trackballjs = asset("trackball.js")
+
 display(MIME"text/html"(),"<script>$threejs</script>")
 display(MIME"text/html"(),"<script>$mainjs</script>")
 display(MIME"text/html"(),"<script>$geometryjs</script>")

@@ -74,6 +74,9 @@ function writemime(io::IO,mime::MIME{symbol("text/html")},webglInst::WebGL)
 	$(webglInst.html)
 	drawScene("$(webglInst.divId)")
 	</script>
+	<script>
+	var controls =  new THREE.TrackballControls(camera, renderer.domElement);
+	</script>
 	"""
 	print(io,html)
 end

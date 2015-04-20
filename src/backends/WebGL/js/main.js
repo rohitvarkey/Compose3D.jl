@@ -1,6 +1,7 @@
 var scene=null;
 var camera = null;
 var renderer = null;
+var controls = null;
 var shapes = [];
 
 var initialize = function(mount){
@@ -8,15 +9,30 @@ var initialize = function(mount){
 	camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 1, 1000 );
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setClearColor( 0xffffff, 1);
+
 	mount.appendChild( renderer.domElement );
 	camera.position.z = 20;
 	camera.position.y = 5;
 	camera.lookAt(new THREE.Vector3(0,0,0));
+
+	controls =  new THREE.TrackballControls(camera, renderer.domElement);
+	controls.rotateSpeed = 1.0;
+	controls.zoomSpeed = 1.2;
+	controls.panSpeed = 0.2;
+
+	controls.noZoom = false;
+	controls.noPan = false;
+	controls.staticMoving = false;
+	controls.dynamicDampingFactor = 0.3;
+	controls.minDistance = 1.1;
+	controls.maxDistance = 300;
+	controls.keys = [16,17,18];
 }
 
 var render = function () {
 	requestAnimationFrame(render);
-	
+	controls.update();
 	//iterate through the list of objects
 	shapes.forEach(function(shape){
 		if(shape.rotate){
@@ -50,6 +66,9 @@ var drawScene = function(mountID,drawAxes){
 	
 	initialize(document.getElementById(mountID));
 	
+	var axisHelper = new THREE.AxisHelper( 5 );
+	scene.add( axisHelper );
+
 	if(drawAxes == true)	{
 		axes = getAxes();			
 		scene.add(axes[0]);

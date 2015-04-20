@@ -1,4 +1,5 @@
 var getCube = function(x,y,z,side,col){
+	col = col || 0x0000000;
 	var geometry = new THREE.BoxGeometry(side,side,side);
 	var material = new THREE.MeshBasicMaterial({color:col});
 	var cube = new THREE.Mesh(geometry,material);
@@ -29,8 +30,9 @@ var getAxes = function(){
 }
 
 var getSphere = function(x,y,z,radius,col,texturemap){
+	col = col || 0x0000000;
 	var geometry = new THREE.SphereGeometry(radius,32,32);
-	var material = new THREE.MeshBasicMaterial({});
+	var material = new THREE.MeshBasicMaterial({color:col});
 	if(texturemap)
 		material.map    = THREE.ImageUtils.loadTexture(texturemap);
 		
@@ -57,8 +59,8 @@ var getSphere = function(x,y,z,radius,col,texturemap){
 	
 var getPyramid = function(x,y,z,base,height,fillColor,outlineColor){
   
-  fillColor = fillColor || 0xffffff;
-  outlineColor = outlineColor || 0xffffff;
+  fillColor = fillColor || 0x000000;
+  outlineColor = outlineColor || 0x00ff00;
   var geometry = new THREE.Geometry();
 
   geometry.vertices.push(new THREE.Vector3(x,y,z));

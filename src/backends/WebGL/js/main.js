@@ -66,8 +66,8 @@ var drawScene = function(mountID,drawAxes){
 	
 	initialize(document.getElementById(mountID));
 	
-	var axisHelper = new THREE.AxisHelper( 5 );
-	scene.add( axisHelper );
+//	var axisHelper = new THREE.AxisHelper( 5 );
+//	scene.add( axisHelper );
 
 	if(drawAxes == true)	{
 		axes = getAxes();			

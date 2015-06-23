@@ -1,12 +1,18 @@
-abstract GeometryPrimitive
+#abstract GeometryPrimitive
+using GeometryTypes
 
 #Geometry type.
 immutable Geometry{P <: GeometryPrimitive} <: Compose3DNode
 	primitives::Vector{P}
 end
 
-#Cube
+#conversion functions between GeometryTypes and Compose Point definitions.
+import Base.convert
+convert(::Type{Point},p::GeometryTypes.Point3) = Point(p.x,p.y,p.z)
+convert(::Type{GeometryTypes.Point3},p::Point{3}) = GeometryTypes.Point3(p.x[1],p.x[2],p.x[3])
 
+resolve(box::BoundingBox, p::GeometryTypes.Point3) = resolve(box,convert(Point, p))
+#Cube
 immutable CubePrimitive <: GeometryPrimitive
 	corner::Point{3}
 	side::Length
@@ -28,22 +34,17 @@ end
 
 #Sphere
 
-immutable SpherePrimitive <: GeometryPrimitive
-	center::Point{3}
-	radius::Length
-end
-
-typealias Sphere Geometry{SpherePrimitive}
-
-SpherePrimitive(x::Length,y::Length,z::Length,radius::Length) = SpherePrimitive(Point(x,y,z),radius)
+typealias Sphere Geometry{GeometryTypes.Sphere}
+typealias SpherePrimitive GeometryTypes.Sphere
 
 function sphere(x::Length,y::Length,z::Length,radius::Length)
-	return Sphere([SpherePrimitive(x::Length,y::Length,z::Length,radius::Length)])
+	return Sphere([SpherePrimitive(GeometryTypes.Point3(x,y,z),radius)])
 end
 
 function resolve(box::Absolute3DBox, sphere::SpherePrimitive)
-	absCenter = Point(resolve(box,sphere.center))
-	absRadius = resolve(box, sphere.radius)mm
+	absCenterCoords = resolve(box,sphere.center)
+	absCenter = GeometryTypes.Point3(absCenterCoords[1],absCenterCoords[2],absCenterCoords[3])
+	absRadius = resolve(box, sphere.r)mm
 	return SpherePrimitive(absCenter,absRadius)
 end
 

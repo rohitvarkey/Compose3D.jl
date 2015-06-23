@@ -23,7 +23,7 @@ function draw(backend::WebGL,parent_box::Absolute3DBox,primitive::GeometryPrimit
 end
 
 function draw(backend::WebGL, cube::CubePrimitive)
-	side = cube.side.value
+    side = cube.side.value
     x = cube.corner.x[1].value
     y = cube.corner.x[2].value
     z = cube.corner.x[3].value
@@ -38,10 +38,10 @@ function draw(backend::WebGL, cube::CubePrimitive)
 end
 
 function draw(backend::WebGL, sphere::SpherePrimitive)
-	radius = sphere.radius.value
-    x = sphere.center.x[1].value
-    y = sphere.center.x[2].value
-    z = sphere.center.x[3].value
+    radius = sphere.r.value
+    x = sphere.center.x.value
+    y = sphere.center.y.value
+    z = sphere.center.z.value
     sphereId= rand(1000:10000000)
     new_html = 
     """

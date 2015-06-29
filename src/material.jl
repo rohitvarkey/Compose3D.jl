@@ -6,8 +6,8 @@ immutable Material{P<:MaterialPrimitive} <: Compose3DNode
     primitives::Vector{P}
 end
 
-immutable MeshColor{T<:ColorValue} <: MaterialPrimitive
-    color::T
+immutable MeshColor <: MaterialPrimitive
+    color::RGB{Float64}
 end
 
 immutable WireFrameMesh <: MaterialPrimitive

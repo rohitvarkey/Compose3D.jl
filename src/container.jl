@@ -13,12 +13,19 @@ function draw(backend::Backend, root_canvas::Context)
     # Checks for contexts, and geometries and resolves and draws them as needed.
     children = root_canvas.children
     parent_box = root_canvas.box
+    material_frame = copy(backend.material_stack[end].materials)
+    pushed_frame = false
     @assert isa(parent_box, AbsoluteBox)
 
     for child in children
         if isa(child,Material)
-            push_material_frame(backend, child)
+            material_frame[typeof(child)] = child
         end
+    end
+    
+    if material_frame != backend.material_stack[end].materials
+        backend = push_material_frame(backend,material_frame)
+        pushed_frame = true
     end
 
     for child in children
@@ -32,6 +39,11 @@ function draw(backend::Backend, root_canvas::Context)
     		backend = draw(backend,child)
     	end
     end
+    
+    if pushed_frame
+        backend = pop_material_frame(backend)
+    end
+    
     return backend
 end
 

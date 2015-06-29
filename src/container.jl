@@ -9,12 +9,18 @@ Context(x0::Length,y0::Length,z0::Length,width::Length,height::Length,depth::Len
 Context(ctx::Context) = Context(ctx.box,ctx.children)
 
 function draw(backend::Backend, root_canvas::Context)
-    # TODO: Traverse the tree in DFS manner. And generate JS code to render stuff. \
-    # Also use the resolve method to convert relative measures to absolute ones.
-    # Hack try for now.
+    # Does a DFS traversal of the compose tree.
+    # Checks for contexts, and geometries and resolves and draws them as needed.
     children = root_canvas.children
     parent_box = root_canvas.box
-    #Assert if parent box has absolute values.
+    @assert isa(parent_box, AbsoluteBox)
+
+    for child in children
+        if isa(child,Material)
+            push_material_frame(backend, child)
+        end
+    end
+
     for child in children
     	if isa(child,Geometry)
     		for primitive in child.primitives

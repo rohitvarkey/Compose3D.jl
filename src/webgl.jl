@@ -18,10 +18,11 @@ function webgl()
     </div>
     <script>
     """
-    return WebGL(divId,html)
+    material_stack = []
+    return WebGL(divId,html,material_stack)
 end
 
-function push_material_frame()
+function push_material_frame(backend::WebGL, material::Material)
 
 end
 
@@ -42,7 +43,7 @@ function draw(backend::WebGL, cube::CubePrimitive)
     var cube$(cubeId) = getCube($x,$y,$z,$side)
     shapes.push(cube$(cubeId))
     """
-    return WebGL(backend.divId, new_html)
+    return WebGL(backend.divId, new_html, backend.material_stack)
 end
 
 function draw(backend::WebGL, sphere::SpherePrimitive)
@@ -57,7 +58,7 @@ function draw(backend::WebGL, sphere::SpherePrimitive)
     var sphere$(sphereId) = getSphere($x,$y,$z,$radius)
     shapes.push(sphere$(sphereId))
     """
-    return WebGL(backend.divId, new_html)
+    return WebGL(backend.divId, new_html, backend.material_stack)
 end
 
 function draw(backend::WebGL, pyramid::PyramidPrimitive)
@@ -73,7 +74,7 @@ function draw(backend::WebGL, pyramid::PyramidPrimitive)
     var pyramid$(pyramidId) = getPyramid($x,$y,$z,$base,$height)
     shapes.push(pyramid$(pyramidId))
     """
-    return WebGL(backend.divId, new_html)
+    return WebGL(backend.divId, new_html, backend.material_stack)
 end
 
 function writemime(io::IO,mime::MIME{symbol("text/html")},webglInst::WebGL)

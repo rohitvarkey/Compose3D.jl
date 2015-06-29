@@ -2,7 +2,7 @@ using Color
 
 abstract MaterialPrimitive
 
-immutable Material{P<:MaterialPrimitive}
+immutable Material{P<:MaterialPrimitive} <: Compose3DNode
     primitives::Vector{P}
 end
 
@@ -16,4 +16,8 @@ end
 
 function mesh_color(color::ColorValue)
     Material([MeshColor(color)])
+end
+
+function wireframe(wireframe::Bool)
+    Material([WireFrameMesh(wireframe)])
 end

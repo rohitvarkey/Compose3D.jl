@@ -18,12 +18,26 @@ function webgl()
     </div>
     <script>
     """
-    material_stack = []
+    #Set up default materials
+    material_stack = [
+                      WebGLMaterialFrame(
+                        Dict{Type, Material}(
+                           Material{MeshColor}=>mesh_color(color("black")),
+                           Material{WireFrameMesh}=>wireframe(false),
+                           )
+                        )
+                      ]
     return WebGL(divId,html,material_stack)
 end
 
-function push_material_frame(backend::WebGL, material::Material)
+function push_material_frame(backend::WebGL, new_material_stack::Dict{Type,Material})
+    push!(backend.material_stack,WebGLMaterialFrame(new_material_stack))
+    return backend
+end
 
+function pop_material_frame(backend::WebGL)
+    pop!(backend.material_stack)
+    return backend
 end
 
 function draw(backend::WebGL,parent_box::Absolute3DBox,primitive::GeometryPrimitive)
@@ -36,11 +50,13 @@ function draw(backend::WebGL, cube::CubePrimitive)
     x = cube.corner.x[1].value
     y = cube.corner.x[2].value
     z = cube.corner.x[3].value
+    material_stack = backend.material_stack[end]
+    color = "0x$(hex(material_stack.materials[Material{MeshColor}].primitives[1].color))"
     cubeId= rand(1000:10000000)
     new_html =
     """
  	$(backend.html)
-    var cube$(cubeId) = getCube($x,$y,$z,$side)
+    var cube$(cubeId) = getCube($x,$y,$z,$side,$color)
     shapes.push(cube$(cubeId))
     """
     return WebGL(backend.divId, new_html, backend.material_stack)
@@ -52,10 +68,12 @@ function draw(backend::WebGL, sphere::SpherePrimitive)
     y = sphere.center.x[2].value
     z = sphere.center.x[3].value
     sphereId= rand(1000:10000000)
+    material_stack = backend.material_stack[end]
+    color = "0x$(hex(material_stack.materials[Material{MeshColor}].primitives[1].color))"
     new_html =
     """
  	$(backend.html)
-    var sphere$(sphereId) = getSphere($x,$y,$z,$radius)
+    var sphere$(sphereId) = getSphere($x,$y,$z,$radius, $color)
     shapes.push(sphere$(sphereId))
     """
     return WebGL(backend.divId, new_html, backend.material_stack)
@@ -68,10 +86,12 @@ function draw(backend::WebGL, pyramid::PyramidPrimitive)
     y = pyramid.corner.x[2].value
     z = pyramid.corner.x[3].value
     pyramidId= rand(1000:10000000)
+    material_stack = backend.material_stack[end]
+    color = "0x$(hex(material_stack.materials[Material{MeshColor}].primitives[1].color))"
     new_html =
     """
  	$(backend.html)
-    var pyramid$(pyramidId) = getPyramid($x,$y,$z,$base,$height)
+    var pyramid$(pyramidId) = getPyramid($x,$y,$z,$base,$height, $color)
     shapes.push(pyramid$(pyramidId))
     """
     return WebGL(backend.divId, new_html, backend.material_stack)

@@ -1,20 +1,28 @@
 #TODO: Add WebGL specific properties here.
+type WebGLMaterialFrame
+	materials :: Dict{Type,Material}
+end
 
 type WebGL <: Backend
-	divId::Integer
-	html::String
+	divId::Integer #id of the div which we are drawing in.
+	html::String #The html to be output.
+	material_stack::Vector{WebGLMaterialFrame} #Stack of properties to be applied
 end
 
 function webgl()
 	#Initialize WebGL backend
 	divId = rand(1000:10000000)
-	html = 
+	html =
 	"""
 	<div id="$divId">
     </div>
     <script>
     """
     return WebGL(divId,html)
+end
+
+function push_material_frame()
+
 end
 
 function draw(backend::WebGL,parent_box::Absolute3DBox,primitive::GeometryPrimitive)
@@ -28,7 +36,7 @@ function draw(backend::WebGL, cube::CubePrimitive)
     y = cube.corner.x[2].value
     z = cube.corner.x[3].value
     cubeId= rand(1000:10000000)
-    new_html = 
+    new_html =
     """
  	$(backend.html)
     var cube$(cubeId) = getCube($x,$y,$z,$side)
@@ -43,7 +51,7 @@ function draw(backend::WebGL, sphere::SpherePrimitive)
     y = sphere.center.x[2].value
     z = sphere.center.x[3].value
     sphereId= rand(1000:10000000)
-    new_html = 
+    new_html =
     """
  	$(backend.html)
     var sphere$(sphereId) = getSphere($x,$y,$z,$radius)
@@ -59,7 +67,7 @@ function draw(backend::WebGL, pyramid::PyramidPrimitive)
     y = pyramid.corner.x[2].value
     z = pyramid.corner.x[3].value
     pyramidId= rand(1000:10000000)
-    new_html = 
+    new_html =
     """
  	$(backend.html)
     var pyramid$(pyramidId) = getPyramid($x,$y,$z,$base,$height)
@@ -69,7 +77,7 @@ function draw(backend::WebGL, pyramid::PyramidPrimitive)
 end
 
 function writemime(io::IO,mime::MIME{symbol("text/html")},webglInst::WebGL)
-	html = 
+	html =
 	"""
 	$(webglInst.html)
 	drawScene("$(webglInst.divId)")

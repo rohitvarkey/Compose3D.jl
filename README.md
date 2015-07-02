@@ -26,13 +26,17 @@ Current primitives implemented are :
 
 Functions available for users to use to create such geometries are:
 	
-* **cube(x0,y0,z0,side)** - *Returns a cube with a corner at (x0,y0,z0) and the diagonal corner as (x0+side,y0+side,z0+side).*
+* **cube(x0,y0,z0,side)** - *Returns a cube centered at (x0,y0,z0) and of the specified `side`*
 * **sphere(x0,y0,z0,radius)** - *Returns a sphere centered at (x0,y0,z0) with the specified radius.*
 * **pyramid(x0,y0,z0,baseLength, h)** - *Returns a square base pyramid of base length 'baseLength' with a corner at (x0,y0,z0) and the specified height 'h'.*
 
 ### Materials (Properties)
 
-Materials are to add properties to the 3D objects like color and texture maps. These have not been implemented as of now. 
+Materials are to add properties to the 3D objects like color and texture maps. 
+
+Functions available currently are:
+
+* **mesh_color(color)** - `color` can be a string or any Color in Color.jl that can be converted to RGB. All geometries that are children of this node and are part of the subtree at the same level will be coloured with this color. 
 
 ### Compositions
 

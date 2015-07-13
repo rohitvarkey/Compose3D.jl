@@ -16,6 +16,7 @@ include("container.jl")
 include("geometry.jl")
 include("material.jl")
 include("webgl.jl")
+include("patchwork.jl")
 
 #Setting up three js files required to display stuff.
 #TODO: Do this only if the MIME is "text/html"

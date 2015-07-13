@@ -6,6 +6,8 @@ immutable Material{P<:MaterialPrimitive} <: Compose3DNode
     primitives::Vector{P}
 end
 
+isscalar(material::Material) = length(material.primitives) == 1
+
 immutable MeshColor <: MaterialPrimitive
     color::RGB{Float64}
 end
@@ -22,7 +24,7 @@ function mesh_color(color::ColorValue)
     Material([MeshColor(convert(RGB{Float64},color))])
 end
 
-function mesh_color(colorString::AbstractString)
+function mesh_color(colorString::String)
     Material([MeshColor(color(colorString))])
 end
 

@@ -47,6 +47,50 @@ function draw(backend::Backend, root_canvas::Context)
     return backend
 end
 
+function draw_recursive(backend::Backend, root_canvas::Context)
+    # Does a DFS traversal of the compose tree.
+    # Checks for contexts, and geometries and resolves and draws them as needed.
+    children = root_canvas.children
+    parent_box = root_canvas.box
+    vector_properties = Dict{Type, Material}()
+    acc = Nothing()
+
+    @assert isa(parent_box, AbsoluteBox)
+
+    for child in children
+        if isa(child,Material)
+            if isscalar(child)
+               acc = addto(backend,acc,draw(backend,child))
+            else
+                vector_properties[typeof(child)] = child
+            end
+        end
+    end
+ 
+    pop_frame = false
+    if !isempty(vector_properties)
+        push_material_frame(backend,vector_properties)
+        pop_frame = true
+    end
+
+    for child in children
+    	if isa(child,Geometry)
+            acc = addto(backend, acc, draw(backend, parent_box, child))
+        
+        elseif isa(child, Context)
+    		child = Context(resolve(parent_box,child.box),child.children)
+    		acc = addto(backend, acc, draw_recursive(backend,child)) #Add order sorting before this.
+    	end
+    end
+    
+    if pop_frame
+        backend = pop_material_frame(backend)
+    end
+
+    acc
+end
+
+
 function copy(ctx::Context)
     return Context(ctx)
 end

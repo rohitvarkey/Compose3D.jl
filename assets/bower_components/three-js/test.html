@@ -1,0 +1,16 @@
+<html>
+<head>
+  <title></title>
+  <script src="../webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="three-js.html">
+
+</head>
+<body>
+    <three-js style="width:1000px;height:500px">
+        <three-js-mesh id="mesh">
+            <three-js-geometry w='10' d='10' h='10'></three-js-geometry>
+            <three-js-material kind='basic'></three-js-material>
+        </three-js-mesh>
+        <three-js-camera x='20' y='20' z='20' lookAt="#mesh"></three-js-camera>
+    </three-js>
+</body>

@@ -1,0 +1,405 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<script src="threejs/three.js"></script>
+<script src="threejs/TrackballControls.js"></script>
+<link rel="import" href="../polymer/polymer.html">
+<polymer-element name="three-js" on-three-js-get-renderer="{{getRenderer}}" on-track="{{track}}" attributes="renderNow">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+      }
+      canvas {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+    </style>
+  </template>
+  <script>
+    Polymer('three-js', {
+      renderNow: false,
+      ready: function() {
+        var renderer = new THREE.WebGLRenderer({antialias: true, alpha:true});
+        this.shadowRoot.appendChild(renderer.domElement);
+        this.renderer = renderer;
+        if (this.offsetWidth ==0 || this.offsetHeight == 0 )
+            renderer.setSize(1000, 562);
+        else
+            renderer.setSize(this.offsetWidth,this.offsetHeight)
+        renderer.shadowMapEnabled = true;
+        renderer.shadowMapType = THREE.PCFShadowMap;
+        renderer.setClearColor(0x000000, 0);
+        this.scene = new THREE.Scene;
+        this.invalidate();
+        console.log('[%s]: ready', this.localName, this.renderer);
+      },
+      renderNowChanged: function() {
+        this.render();
+      },
+      invalidate: function() {
+        this.validateJob = this.job(this.validateJob, this.validate, 250);
+      },
+      validate: function() {
+        (this.validateJob || this.nullJob).stop();
+        this.render();
+      },
+      nullJob: {
+        stop: function(){}
+      },
+      render: function() {
+        var self=this
+        window.requestAnimationFrame(function () { self.render() });
+        if (this.camera) {
+            //console.log(this.scene);
+            this.controls.update();
+            this.renderer.render(this.scene, this.camera);
+        } else console.log('no camera');
+      },
+      add3: function(child) {
+        if (child.localName === 'three-js-camera') {
+          this.camera = child.object;
+          this.camera.lookAt(new THREE.Vector3(0,0,0));
+          this.controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
+          //console.log(child.object);
+        }
+        this.scene.add(child.object);
+        this.invalidate();
+      },
+      remove3: function(child) {
+        this.scene.remove(child.object);
+        this.invalidate();
+      },
+      getRenderer: function(event) {
+        event.detail.renderer = this.renderer;
+        //return this.renderer;
+      },
+      //
+      track: function(event) {
+        var obj = this.camera;
+        var obj = this.querySelector('[tracking]').object;
+        if (obj) {
+          // TODO(sjmiles): accumulating derivatives is numerically unstable
+          // integrating samples over a single track sequence is a better practice
+          // make this easier to do properly
+          obj.position.x += event.ddx;
+          obj.position.z += event.ddy;
+          this.render();
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-object" attributes="x y z rx ry rz castShadow receiveShadow tracking">
+  <script>
+    Polymer('three-js-object', {
+      x: 0,
+      y: 0,
+      z: 0,
+      rx: 0,
+      ry: 0,
+      rz: 0,
+      castShadow: false,
+      receiveShadow: false,
+      tracking: false,
+      observe: {
+       x: 'updatePosition',
+       y: 'updatePosition',
+       z: 'updatePosition'
+      },
+      setPosition: function(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+      },
+      objectChanged: function() {
+        this.updatePosition();
+      },
+      updatePosition: function() {
+        if (this.object) {
+          this.object.position.set(Number(this.x), Number(this.y), Number(this.z));
+          this.object.rotation.set(this.rx * Math.PI/180, this.ry * Math.PI/180, this.rz * Math.PI/180);
+          this.object.castShadow = this.castShadow;
+          this.object.receiveShadow = this.receiveShadow;
+        }
+      },
+      /*get position() {
+        return {x: this.x, y: this.y, z: this.z};
+      },*/
+      addToParent3: function() {
+        if (this.parentNode.add3 && !this.objectParent) {
+          this.objectParent = this.parentNode;
+          this.parentNode.add3(this);
+          //console.log('[%s]: added to threejs-object parent', this.localName + (this.id ? '#' + this.id : ''));
+        }
+      },
+      removeFromParent3: function() {
+        if (this.objectParent) {
+          this.objectParent.remove3(this);
+          this.objectParent = null;
+          //console.log('[%s]: REMOVED from threejs-object parent', this.localName + (this.id ? '#' + this.id : ''));
+        }
+      },
+      attached: function() {
+        /*
+        var l = '';
+        var p = this.parentNode;
+        while (p) {
+          l += ':' + p.localName;
+          p = p.parentNode || p.host;
+        }
+        console.log('[%s]: attached: parent chain: [%s]', this.localName + (this.id ? '#' + this.id : ''), l);
+        */
+        this.async(function() {
+          //console.log('[%s]: lightDomReady', this.localName);
+          this.lightDomReady();
+        });
+      },
+      lightDomReady: function() {
+        this.addToParent3();
+      },
+      detached: function() {
+        this.removeFromParent3();
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-camera" extends="three-js-object" attributes="aspect fov lookAt">
+  <script>
+    Polymer('three-js-camera', {
+      lookAt: '',
+      aspect: 16 / 9,
+      fov: 45,
+      object: null,
+      observe: {
+      'lookAt': 'lookAtChanged',
+      },
+      ready: function() {
+        this.object = new THREE.PerspectiveCamera(this.fov, this.aspect, 0.1, 10000);
+      },
+      updatePosition: function() {
+        this.super();
+        this.lookAtChanged();
+      },
+      lookAtChanged: function() {
+        var node = this.parentNode.querySelector(this.lookAt);
+        if (node /*&& node.object*/) {
+          this.object.lookAt(node);
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-light" extends="three-js-object" attributes="kind color intensity distance angle exponent shadow">
+  <script>
+    Polymer('three-js-light', {
+      kinds: {
+        point: 'PointLight',
+        spot: 'SpotLight',
+        ambient: 'AmbientLight',
+      },
+      color: 0xFFFFFF,
+      shadow: false,
+      intensity: 1,
+      distance: 0,
+      angle: 60,
+      exponent: 8,
+      ready: function() {
+        var kind = this.kinds[this.kind] || this.kinds.point;
+        //console.log(kind);
+        this.object = new THREE[kind](this.color, this.intensity, this.distance, this.angle * Math.PI/180, this.exponent);
+        if (this.shadow) {
+          this.object.castShadow = true;
+          this.object.shadowMapWidth = 1024;
+          this.object.shadowMapHeight = 1024;
+          this.object.shadowCameraNear = 500;
+          this.object.shadowCameraFar = 4000;
+          this.object.shadowCameraFov = 30;
+          this.object.shadowBias = 0.0001;
+          this.object.shadowDarkness = 0.5;
+        }
+      },
+      updatePosition: function() {
+        this.super();
+        //console.log('updatePosition:', this.kind, this)
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-mesh" extends="three-js-object" on-three-js-material-changed="{{doMaterialChanged}}" on-three-js-geometry-changed="{{doGeometryChanged}}">
+  <script>
+    Polymer('three-js-mesh', {
+      ready: function() {
+        //this.validate();
+        this.observeDOM();
+      },
+      observeDOM: function() {
+        this.onMutation(this, function() {
+          this.validate();
+          this.observeDOM();
+        });
+      },
+      validate: function() {
+          if (this.objectParent) {
+              this.removeFromParent3();
+          }
+          if (!this.geometry) {
+            var g = this.querySelector('three-js-geometry');
+            this.geometry = g ? g.object : null;
+          }
+          if (this.geometry && this.material) {
+            //this.removeFromParent3();
+            this.object = new THREE.Mesh(this.geometry, this.material);
+            this.addToParent3();
+          }
+      },
+      lightDomReady: function() {
+        // stub out super class version, we don't enter the
+        // scene graph until our geometry and material are both ready
+      },
+      doMaterialChanged: function(event, material) {
+        this.material = material;
+        this.validate();
+        event.stopPropagation();
+    },
+    doGeometryChanged: function(event, geometry) {
+      this.geometry = geometry;
+      //console.log("New geom set");
+      this.validate();
+      event.stopPropagation();
+  },
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-material" attributes="kind color side texture ambient specular shine shading">
+  <script>
+    Polymer('three-js-material', {
+      kinds: {
+        basic: 'MeshBasicMaterial',
+        lambert: 'MeshLambertMaterial',
+        phong: 'MeshPhongMaterial',
+        texture: 'texture'
+      },
+      sides: {
+        front: 'FrontSide',
+        back: 'BackSide',
+        double: 'DoubleSide'
+      },
+      shadings: {
+        flat: 'FlatShading'
+      },
+      //ambient: 0,
+      //specular: 0,
+      //shininess: 30,
+      color: 0x1EC876,
+      texture: '',
+      attached: function() {
+        this.async(function() {
+          //console.log('[%s]: lightDomReady', this.localName);
+          this.lightDomReady();
+        });
+      },
+      lightDomReady: function() {
+        this.init();
+        //this.super();
+      },
+      init: function() {
+        var kind = this.kinds[this.kind] || this.kinds.lambert;
+        var side = this.sides[this.side] || this.sides.front;
+        var shading = this.shadings[this.shading] || this.shadings.flat;
+        switch (kind) {
+          case 'texture':
+            var texture = THREE.ImageUtils.loadTexture(this.texture);
+            var renderer = this.fire('three-js-get-renderer').detail.renderer;
+            if (renderer) {
+              texture.anisotropy = renderer.getMaxAnisotropy();
+            } else {
+              console.log('no renderer');
+            }
+            this.object = new THREE.MeshBasicMaterial({map: texture, side: THREE[side]});
+            break;
+          default:
+            this.object = new (THREE[kind])({
+              color: this.color,
+              side: THREE[side],
+              specular: this.specular,
+              shininess: this.shine,
+              ambient: this.ambient,
+              shading: THREE[shading]
+            });
+            break;
+        }
+      },
+      objectChanged: function() {
+        this.fire('three-js-material-changed', this.object);
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-geometry" attributes="w h d extent">
+  <script>
+    Polymer('three-js-geometry', {
+      w: 100,
+      h: 100,
+      d: 100,
+      extent: 0,
+      observe: {
+          'w' : 'newGeo',
+          'h' : 'newGeo',
+          'd' : 'newGeo',
+      },
+      ready: function() {
+        this.extentChanged();
+        this.object = new THREE.BoxGeometry(this.w, this.h, this.d);
+      },
+      extentChanged: function() {
+        if (this.extent) {
+          this.w = this.h = this.d = this.extent;
+        }
+    },
+      newGeo : function() {
+        //console.log("New Geo called");
+        this.object = new THREE.BoxGeometry(this.w, this.h, this.d);
+        this.fire('three-js-geometry-changed', this.object);
+    },
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-cube" extends="three-js-mesh" attributes="color" noscript lightdom>
+  <template>
+    <three-js-geometry></three-js-geometry>
+    <three-js-material kind="lambert" color="{{color}}"></three-js-material>
+  </template>
+</polymer-element>
+
+<!-- prototype chain not supported for second argument to Polymer() -->
+
+<!--<polymer-element name="real-three-js-light">
+  <script>
+    (function() {
+      var proto = Object.create(THREE.PointLight.prototype);
+      proto.ready = function() {
+        THREE.PointLight.call(this);
+        //console.dir(this);
+      }
+      Polymer('real-three-js-light', proto);
+    })();
+  </script>
+</polymer-element>-->

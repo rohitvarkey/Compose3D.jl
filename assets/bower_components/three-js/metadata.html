@@ -1,0 +1,44 @@
+<!--
+    @license
+    Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+    This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+    The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+    The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+    Code distributed by Google as part of the polymer project is also
+    subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<x-meta id="three-js" label="ThreeJS" isContainer group="three-js">
+  <template thumb>
+    <img src="/bowertopia/components/three-js/threejs.jpg">
+  </template>
+  <template>
+    <three-js style="width: 400px; height: 240px; border: 2px solid black">
+      <three-js-light tracking x="0" y="0" z="100"></three-js-light>
+      <three-js-light kind="spot" x="-150" y="350" rx="90"></three-js-light>
+
+      <three-js-mesh id="floor" y="-50">
+        <three-js-geometry w="1500" h="1" d="1500"></three-js-geometry>
+        <three-js-material kind="phong" color="16777215" ambient="16777215" specular="16777215" shine="30" side="double"></three-js-material>
+      </three-js-mesh>
+
+      <three-js-cube x="-200"></three-js-cube>
+
+      <three-js-camera y="10" z="600" lookAt="#floor"></three-js-camera>
+    </three-js>
+  </template>
+  <template id="imports">
+    <link rel="import" href="three-js.html">
+  </template>
+</x-meta>
+
+<x-meta id="three-js-camera" label="ThreeJS Camera" group="three-js"></x-meta>
+
+<x-meta id="three-js-light" label="ThreeJS Light" group="three-js"></x-meta>
+
+<x-meta id="three-js-mesh" label="ThreeJS Mesh" group="three-js"></x-meta>
+
+<x-meta id="three-js-material" label="ThreeJS Material" group="three-js"></x-meta>
+
+<x-meta id="three-js-geometry" label="ThreeJS Geometry" group="three-js"></x-meta>
+
+<x-meta id="three-js-cube" label="ThreeJS Cube" group="three-js"></x-meta>

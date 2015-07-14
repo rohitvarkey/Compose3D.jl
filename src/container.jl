@@ -53,7 +53,7 @@ function draw_recursive(backend::Backend, root_canvas::Context)
     children = root_canvas.children
     parent_box = root_canvas.box
     vector_properties = Dict{Type, Material}()
-    acc = Nothing()
+    acc = nothing
 
     @assert isa(parent_box, AbsoluteBox)
 

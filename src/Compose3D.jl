@@ -9,6 +9,8 @@ import Base: length, start, next, done, isempty, getindex, setindex!,
              display, writemime, convert, zero, isless, max, fill, size, copy,
              min, max, +, -, *, /
 
+import Patchwork: Elem
+
 #Including files.
 include("measure.jl")
 include("list.jl")
@@ -28,13 +30,14 @@ mainjs = asset("main.js")
 geometryjs = asset("geometry.js")
 trackballjs = asset("trackball.js")
 
-display(MIME"text/html"(),"<script>$threejs</script>")
-display(MIME"text/html"(),"<script>$mainjs</script>")
-display(MIME"text/html"(),"<script>$geometryjs</script>")
-display(MIME"text/html"(),"<script>$trackballjs</script>")
+#display(MIME"text/html"(),"<script>$threejs</script>")
+#display(MIME"text/html"(),"<script>$mainjs</script>")
+#display(MIME"text/html"(),"<script>$geometryjs</script>")
+#display(MIME"text/html"(),"<script>$trackballjs</script>")
+display(MIME"text/html"(),"<link rel=import href=/static/components/compose3d/bower_components/three-js/three-js.html>")
 
 function writemime(io::IO,mime::MIME{symbol("text/html")},ctx::Context)
-	backend = draw(webgl(),ctx)
+	backend = Elem(:div, style=Dict(:width=>"100%", :height=>"600px")) << draw(Patchable3D(100,100),ctx)
 	display(backend)
 end
 

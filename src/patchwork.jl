@@ -131,6 +131,20 @@ function draw(backend::Patchable3D, sphere::SpherePrimitive)
     elem
 end
 
+function draw(backend::Patchable3D, pyramid::PyramidPrimitive)
+    height = pyramid.height.value
+    base = pyramid.base.value
+    x = pyramid.corner.x[1].value
+    y = pyramid.corner.x[2].value
+    z = pyramid.corner.x[3].value
+    
+    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
+    [
+        Elem(:"three-js-pyramid",base=base, height=height),
+    ])
+    elem
+end
+
 # Material primitives
 # -------------------
 

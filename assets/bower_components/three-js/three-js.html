@@ -340,7 +340,7 @@
               specular: this.specular,
               shininess: this.shine,
               ambient: this.ambient,
-              shading: THREE[shading]
+              shading: THREE[shading],
             });
             break;
         }
@@ -396,6 +396,40 @@
       newGeo : function() {
         this.object = new THREE.SphereGeometry(this.r, 32, 16);
         this.fire('three-js-geometry-changed', this.object);
+    },
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-pyramid" attributes="base height">
+  <script>
+    Polymer('three-js-pyramid', {
+    base : 5,
+    height: 10,
+      observe: {
+        'base' : 'newGeo',
+        'height': 'newGeo'
+      },
+      ready: function() {
+            this.newGeo();
+      },
+      newGeo : function() {
+      var pyramid = new THREE.Geometry();
+      pyramid.vertices.push(new THREE.Vector3(0,0,0));
+      pyramid.vertices.push(new THREE.Vector3(this.base,0,0));
+      pyramid.vertices.push(new THREE.Vector3(this.base,this.base,0));
+      pyramid.vertices.push(new THREE.Vector3(0,this.base,0));
+      pyramid.vertices.push(new THREE.Vector3(this.base/2,this.base/2,this.height));
+      pyramid.faces.push(new THREE.Face3(0, 1, 4));
+      pyramid.faces.push(new THREE.Face3(1, 2, 4));
+      pyramid.faces.push(new THREE.Face3(3, 4, 2));
+      pyramid.faces.push(new THREE.Face3(3, 0, 4));
+      pyramid.faces.push(new THREE.Face3(0, 2, 1));
+      pyramid.faces.push(new THREE.Face3(0, 3, 2));
+      pyramid.computeFaceNormals();
+      pyramid.computeBoundingSphere();
+      this.object = pyramid;
+      this.fire('three-js-geometry-changed', this.object);
     },
     });
   </script>

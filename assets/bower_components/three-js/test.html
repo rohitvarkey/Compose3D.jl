@@ -11,10 +11,14 @@
             <three-js-box w='1' d='1' h='1'></three-js-box>
             <three-js-material kind='basic'></three-js-material>
         </three-js-mesh>
-        <three-js-mesh id="mesh22">
-            <three-js-sphere r='10'></three-js-sphere>
+        <three-js-mesh x=-11 y=-11 z=-11 id="mesh">
+            <three-js-sphere r='1'></three-js-sphere>
             <three-js-material kind='basic'></three-js-material>
         </three-js-mesh>
-        <three-js-camera x='20' y='20' z='20' lookAt="#mesh"></three-js-camera>
+        <three-js-mesh id="mesh22">
+            <three-js-pyramid base='5' height='2'></three-js-pyramid>
+            <three-js-material kind='basic'></three-js-material>
+        </three-js-mesh>
+        <three-js-camera x='20' y='20' z='20' lookAt="#mesh22"></three-js-camera>
     </three-js>
 </body>

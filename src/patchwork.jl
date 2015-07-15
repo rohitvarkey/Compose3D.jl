@@ -113,7 +113,20 @@ function draw(backend::Patchable3D, cube::CubePrimitive)
     
     elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
     [
-        Elem(:"three-js-geometry",w=side,h=side,d=side),
+        Elem(:"three-js-box",w=side,h=side,d=side),
+    ])
+    elem
+end
+
+function draw(backend::Patchable3D, sphere::SpherePrimitive)
+    radius = sphere.radius.value
+    x = sphere.center.x[1].value
+    y = sphere.center.x[2].value
+    z = sphere.center.x[3].value
+    
+    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
+    [
+        Elem(:"three-js-sphere",r=radius),
     ])
     elem
 end

@@ -352,9 +352,9 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-geometry" attributes="w h d extent">
+<polymer-element name="three-js-box" attributes="w h d extent">
   <script>
-    Polymer('three-js-geometry', {
+    Polymer('three-js-box', {
       w: 100,
       h: 100,
       d: 100,
@@ -382,11 +382,23 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-cube" extends="three-js-mesh" attributes="color" noscript lightdom>
-  <template>
-    <three-js-geometry></three-js-geometry>
-    <three-js-material kind="lambert" color="{{color}}"></three-js-material>
-  </template>
+<polymer-element name="three-js-sphere" attributes="r">
+  <script>
+    Polymer('three-js-sphere', {
+      r : 10,
+      observe: {
+          'r' : 'newGeo',
+      },
+      ready: function() {
+        this.object = new THREE.SphereGeometry(this.r, 32, 16);
+        this.fire('three-js-geometry-changed', this.object);
+      },
+      newGeo : function() {
+        this.object = new THREE.SphereGeometry(this.r, 32, 16);
+        this.fire('three-js-geometry-changed', this.object);
+    },
+    });
+  </script>
 </polymer-element>
 
 <!-- prototype chain not supported for second argument to Polymer() -->

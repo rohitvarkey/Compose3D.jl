@@ -7,8 +7,12 @@
 </head>
 <body>
     <three-js style="width:1000px;height:500px">
-        <three-js-mesh id="mesh">
-            <three-js-geometry w='10' d='10' h='10'></three-js-geometry>
+        <three-js-mesh x=11 y=11 z=11 id="mesh">
+            <three-js-box w='1' d='1' h='1'></three-js-box>
+            <three-js-material kind='basic'></three-js-material>
+        </three-js-mesh>
+        <three-js-mesh id="mesh22">
+            <three-js-sphere r='10'></three-js-sphere>
             <three-js-material kind='basic'></three-js-material>
         </three-js-mesh>
         <three-js-camera x='20' y='20' z='20' lookAt="#mesh"></three-js-camera>

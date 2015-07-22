@@ -76,9 +76,9 @@ function draw(backend::Patchable3D, root::Context)
         [
             draw_recursive(backend, root);
             #TODO : Check for cameras and lights specified before assigning defaults
-            Elem(:"three-js-camera",x=20,y=20,z=20);
-            Elem(:"three-js-light",kind="spot",x=30,y=30,z=30);
-            Elem(:"three-js-light",kind="spot",x=-20,y=-20,z=-40);
+            Elem(:"three-js-camera",x=-20,y=0,z=25);
+            Elem(:"three-js-light",kind="spot",x=0,y=-30,z=0);
+            Elem(:"three-js-light",kind="spot",x=-0,y=20,z=0);
         ]
         )
 end

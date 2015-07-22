@@ -105,15 +105,17 @@ function draw(backend::Patchable3D, parent_box::AbsoluteBox, geometry::Geometry)
     acc
 end
 
-function draw(backend::Patchable3D, cube::CubePrimitive)
-    side = cube.side.value
-    x = cube.corner.x[1].value
-    y = cube.corner.x[2].value
-    z = cube.corner.x[3].value
+function draw(backend::Patchable3D, cube::BoxPrimitive)
+    width= cube.width.value
+    height = cube.height.value
+    depth = cube.depth.value
+    x = cube.center.x[1].value
+    y = cube.center.x[2].value
+    z = cube.center.x[3].value
     
     elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
     [
-        Elem(:"three-js-box",w=side,h=side,d=side),
+        Elem(:"three-js-box",w=width,h=height,d=depth),
     ])
     elem
 end

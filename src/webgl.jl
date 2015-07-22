@@ -45,7 +45,7 @@ function draw(backend::WebGL,parent_box::Absolute3DBox,primitive::GeometryPrimit
 	return draw(backend,resPrimitive)
 end
 
-function draw(backend::WebGL, cube::CubePrimitive)
+function draw(backend::WebGL, cube::BoxPrimitive)
 	side = cube.side.value
     x = cube.corner.x[1].value
     y = cube.corner.x[2].value

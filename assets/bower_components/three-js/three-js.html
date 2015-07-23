@@ -404,6 +404,50 @@
   </script>
 </polymer-element>
 
+<polymer-element name="three-js-cylinder" attributes="top bottom height">
+  <script>
+    Polymer('three-js-cylinder', {
+      top : 10,
+      bottom : 10,
+      height : 10,
+      observe: {
+        'top' : 'newGeo',
+        'bottom' : 'newGeo',
+        'height' : 'newGeo', 
+      },
+      ready: function() {
+        this.object = new THREE.CylinderGeometry(this.top,this.bottom,this.height, 32, 16);
+        this.fire('three-js-geometry-changed', this.object);
+      },
+      newGeo : function() {
+        this.object = new THREE.CylinderGeometry(this.top,this.bottom,this.height, 32, 16);
+        this.fire('three-js-geometry-changed', this.object);
+    },
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-torus" attributes="r tube">
+  <script>
+    Polymer('three-js-torus', {
+      tube : 10,
+      r : 10,
+      observe: {
+        'tube' : 'newGeo',
+        'r' : 'newGeo', 
+      },
+      ready: function() {
+        this.object = new THREE.TorusGeometry(this.r,this.tube, 32, 32);
+        this.fire('three-js-geometry-changed', this.object);
+      },
+      newGeo : function() {
+        this.object = new THREE.TorusGeometry(this.r,this.tube, 32, 32);
+        this.fire('three-js-geometry-changed', this.object);
+    },
+    });
+  </script>
+</polymer-element>
+
 <polymer-element name="three-js-pyramid" attributes="base height">
   <script>
     Polymer('three-js-pyramid', {

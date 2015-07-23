@@ -147,6 +147,35 @@ function draw(backend::Patchable3D, pyramid::PyramidPrimitive)
     elem
 end
 
+function draw(backend::Patchable3D, cylinder::CylinderPrimitive)
+    top = cylinder.topradius.value
+    bottom = cylinder.bottomradius.value
+    height = cylinder.height.value
+    x = cylinder.center.x[1].value
+    y = cylinder.center.x[2].value
+    z = cylinder.center.x[3].value
+    
+    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
+    [
+        Elem(:"three-js-cylinder",top=top, bottom=bottom, height=height),
+    ])
+    elem
+end
+
+function draw(backend::Patchable3D, torus::TorusPrimitive)
+    radius = torus.radius.value
+    tube = torus.tubediameter.value
+    x = torus.center.x[1].value
+    y = torus.center.x[2].value
+    z = torus.center.x[3].value
+    
+    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
+    [
+        Elem(:"three-js-torus",r=radius, tube=tube),
+    ])
+    elem
+end
+
 # Material primitives
 # -------------------
 

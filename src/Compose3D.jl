@@ -37,6 +37,6 @@ end
 #exporting types and functions to be used by the user on importing the module
 export Point, Length, BoundingBox, AbsoluteBox, Context, mm, cm, inch, pt, w, h,
        d, cube, box, compose, draw, sphere, pyramid, mesh_color, 
-       wireframe
+       wireframe, cylinder, torus
 
 end # module

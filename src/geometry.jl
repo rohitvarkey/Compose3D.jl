@@ -77,3 +77,52 @@ function resolve(box::Absolute3DBox, pyramid::PyramidPrimitive)
 	absheight = resolve(box, pyramid.height)mm
 	return PyramidPrimitive(abscorner,absbase,absheight)
 end
+
+#Cylinder 
+
+immutable CylinderPrimitive <: GeometryPrimitive
+    center::Point{3}
+    topradius::Length
+    bottomradius::Length
+    height::Length
+end
+
+typealias Cylinder Geometry{CylinderPrimitive}
+
+CylinderPrimitive(x::Length, y::Length, z::Length, top::Length, bottom::Length, height::Length) = 
+    CylinderPrimitive(Point(x,y,z),top,bottom,height)
+
+cylinder(x::Length,y::Length,z::Length,top::Length,bottom::Length,height::Length) = 
+    Cylinder([CylinderPrimitive(x,y,z,top,bottom,height)])
+cylinder(top::Length,bottom::Length,height::Length) = 
+    Cylinder([CylinderPrimitive(0mm,0mm,0mm,top,bottom,height)])
+
+function resolve(box::Absolute3DBox, cylinder::CylinderPrimitive)
+    abscenter = Point(resolve(box, cylinder.center))
+    abstop = resolve(box, cylinder.topradius)mm
+    absbottom = resolve(box, cylinder.bottomradius)mm
+    absheight = resolve(box, cylinder.height)mm
+    CylinderPrimitive(abscenter, abstop, absbottom, absheight)
+end
+
+immutable TorusPrimitive <: GeometryPrimitive
+    center::Point{3}
+    radius::Length
+    tubediameter::Length
+end
+
+typealias Torus Geometry{TorusPrimitive}
+
+TorusPrimitive(x::Length,y::Length,z::Length,r::Length,tube::Length) = 
+    TorusPrimitive(Point(x,y,z),r,tube)
+
+torus(x::Length,y::Length,z::Length,r::Length,tube::Length) = 
+    Torus([TorusPrimitive(x,y,z,r,tube)])
+torus(r::Length,tube::Length) = Torus([TorusPrimitive(0mm,0mm,0mm,r,tube)])
+
+function resolve(box::Absolute3DBox, torus::TorusPrimitive)
+    abscenter = Point(resolve(box, torus.center))
+    absradius = resolve(box, torus.radius)mm
+    abstube = resolve(box, torus.tubediameter)mm
+    TorusPrimitive(abscenter, absradius, abstube)
+end

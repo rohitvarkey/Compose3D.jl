@@ -17,7 +17,6 @@ include("list.jl")
 include("container.jl")
 include("geometry.jl")
 include("material.jl")
-include("webgl.jl")
 include("patchwork.jl")
 
 #Setting up three js files required to display stuff.
@@ -37,7 +36,7 @@ end
 
 #exporting types and functions to be used by the user on importing the module
 export Point, Length, BoundingBox, AbsoluteBox, Context, mm, cm, inch, pt, w, h,
-       d, cube, box, compose, draw, WebGL, webgl, sphere, pyramid, mesh_color, 
+       d, cube, box, compose, draw, sphere, pyramid, mesh_color, 
        wireframe
 
 end # module

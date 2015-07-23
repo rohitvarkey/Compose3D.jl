@@ -37,8 +37,8 @@
             renderer.setSize(1000, 562);
         else
             renderer.setSize(this.offsetWidth,this.offsetHeight)
-        renderer.shadowMapEnabled = true;
-        renderer.shadowMapType = THREE.PCFShadowMap;
+        //renderer.shadowMapEnabled = true;
+        //renderer.shadowMapType = THREE.PCFShadowMap;
         renderer.setClearColor(0x000000, 0);
         this.scene = new THREE.Scene;
         this.invalidate();
@@ -303,9 +303,9 @@
       shadings: {
         flat: 'FlatShading'
       },
-      //ambient: 0,
-      //specular: 0,
-      //shininess: 30,
+      ambient: 0,
+      specular: 0,
+      shine: 30,
       color: 0x1EC876,
       texture: '',
       attached: function() {
@@ -320,7 +320,7 @@
       },
       init: function() {
         var kind = this.kinds[this.kind] || this.kinds.lambert;
-        var side = this.sides[this.side] || this.sides.front;
+        var side = this.sides[this.side] || this.sides.double;
         var shading = this.shadings[this.shading] || this.shadings.flat;
         switch (kind) {
           case 'texture':
@@ -347,7 +347,10 @@
       },
       objectChanged: function() {
         this.fire('three-js-material-changed', this.object);
-      }
+      },
+      observe : {
+        'color' : 'init',
+      },
     });
   </script>
 </polymer-element>
@@ -417,9 +420,9 @@
       var pyramid = new THREE.Geometry();
       pyramid.vertices.push(new THREE.Vector3(0,0,0));
       pyramid.vertices.push(new THREE.Vector3(this.base,0,0));
-      pyramid.vertices.push(new THREE.Vector3(this.base,this.base,0));
-      pyramid.vertices.push(new THREE.Vector3(0,this.base,0));
-      pyramid.vertices.push(new THREE.Vector3(this.base/2,this.base/2,this.height));
+      pyramid.vertices.push(new THREE.Vector3(this.base,0,this.base));
+      pyramid.vertices.push(new THREE.Vector3(0,0,this.base));
+      pyramid.vertices.push(new THREE.Vector3(this.base/2,this.height,this.base/2));
       pyramid.faces.push(new THREE.Face3(0, 1, 4));
       pyramid.faces.push(new THREE.Face3(1, 2, 4));
       pyramid.faces.push(new THREE.Face3(3, 4, 2));

@@ -59,7 +59,10 @@ end
 # Material addition and removal
 # -----------------------------
 
-function push_material_frame(backend::Patchable3D, vector_properties::Dict{Type,Material})
+function push_material_frame(
+        backend::Patchable3D, 
+        vector_properties::Dict{Type,Material}
+    )
     push!(backend.vector_properties, vector_properties)
 end
 

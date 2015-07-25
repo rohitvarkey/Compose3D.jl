@@ -10,12 +10,14 @@ type Patchable3D <: Backend
     height::Float64 
     material_tag::Elem{:xhtml,symbol("three-js-material")} #Current materials in effect
     vector_properties::Vector
+    lights::Bool
 
     function Patchable3D(width, height)
         new(width,
             height,
             Elem(:"three-js-material"),
-            Any[])
+            Any[],
+            false)
     end
 end
 
@@ -47,6 +49,8 @@ addto(::Patchable3D, acc::Nothing, child::Nothing) = acc
 addto(::Patchable3D, acc::Nothing, child::Vector{Elem}) = child
 addto(::Patchable3D, acc::Vector{Elem}, child::Nothing) = acc
 addto(::Patchable3D, acc::Vector{Elem}, child::Vector{Elem}) = [ acc; child ]
+addto(::Patchable3D, acc::Vector{Elem}, child::Elem) = [ acc; child ]
+addto(::Patchable3D, acc::Nothing, child::Elem) =  Elem[child]
 addto(::Patchable3D, 
     elem::Elem{:xhtml,symbol("three-js-mesh")},
     child::Elem{:xhtml,symbol("three-js-material")}) = 
@@ -80,10 +84,15 @@ function draw(backend::Patchable3D, root::Context)
             draw_recursive(backend, root);
             #TODO : Check for cameras and lights specified before assigning defaults
             Elem(:"three-js-camera",x=-20,y=0,z=25);
-            Elem(:"three-js-light",kind="spot",x=0,y=-30,z=0);
-            Elem(:"three-js-light",kind="spot",x=-0,y=20,z=0);
         ]
         )
+    #TODO: Make this better by figuring out max and min x,y and z.
+    if !(backend.lights)
+       println("Default lights added.")
+       root = root << Elem(:"three-js-light",kind="spot",x=0,y=-30,z=0) 
+       root = root << Elem(:"three-js-light",kind="spot",x=-0,y=20,z=0)
+    end
+    root
 end
 
 # Form drawing
@@ -201,4 +210,50 @@ end
 function draw(img::Patchable3D, prim::MeshColor)
     color = string("#" * hex(prim.color))
     :color, color
+end
+
+# Lights
+# ------
+
+function draw(img::Patchable3D, parent_box::AbsoluteBox, light::Light)
+    draw(img, resolve(parent_box, light))
+end
+
+function draw(img::Patchable3D, light::AmbientLight)
+    color = string("#" * hex(light.color))
+    elem = Elem(:"three-js-light", kind="ambient", color=color)
+    elem
+end
+
+function draw(img::Patchable3D, light::PointLight)
+    color = string("#" * hex(light.color))
+    elem = Elem(
+        :"three-js-light", 
+        kind="point", 
+        color=color, 
+        intensity=light.intensity,
+        distance=light.distance,
+        x=light.position.x[1].value,
+        y=light.position.x[2].value,
+        z=light.position.x[3].value,
+    )
+    elem
+end
+
+function draw(img::Patchable3D, light::SpotLight)
+    color = string("#" * hex(light.color))
+    elem = Elem(
+        :"three-js-light", 
+        kind="spot", 
+        color=color, 
+        intensity=light.intensity,
+        distance=light.distance,
+        angle=light.angle,
+        exponent=light.exponent,
+        shadow=light.shadow,
+        x=light.position.x[1].value,
+        y=light.position.x[2].value,
+        z=light.position.x[3].value,
+    )
+    elem
 end

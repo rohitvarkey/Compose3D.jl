@@ -65,6 +65,8 @@ function draw_recursive(backend::Backend, root_canvas::Context)
             else
                 vector_properties[typeof(child)] = child
             end
+        elseif !backend.lights && isa(child, Light)
+            backend.lights = true
         end
     end
  
@@ -75,9 +77,8 @@ function draw_recursive(backend::Backend, root_canvas::Context)
     end
 
     for child in children
-    	if isa(child,Geometry)
+    	if isa(child,Geometry) || isa(child, Light)
             acc = addto(backend, acc, draw(backend, parent_box, child))
-        
         elseif isa(child, Context)
     		child = Context(resolve(parent_box,child.box),child.children)
     		acc = addto(backend, acc, draw_recursive(backend,child)) #Add order sorting before this.

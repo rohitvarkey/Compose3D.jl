@@ -79,16 +79,25 @@ end
 
 function draw(backend::Patchable3D, root::Context)
     
+    camera = nothing
+    for child in root.children
+        if isa(child, Camera)
+            camera = child
+        end
+    end
+
     root = Elem(:"three-js",
         [
             draw_recursive(backend, root);
-            #TODO : Check for cameras and lights specified before assigning defaults
-            Elem(:"three-js-camera",x=-20,y=0,z=25);
         ]
         )
     #TODO: Make this better by figuring out max and min x,y and z.
+        if camera == nothing
+        root = root << Elem(:"three-js-camera",x=-20,y=0,z=25);
+    else
+        root = root << draw(backend,camera)
+    end
     if !(backend.lights)
-       println("Default lights added.")
        root = root << Elem(:"three-js-light",kind="spot",x=0,y=-30,z=0) 
        root = root << Elem(:"three-js-light",kind="spot",x=-0,y=20,z=0)
     end

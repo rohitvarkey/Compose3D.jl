@@ -18,6 +18,7 @@ include("container.jl")
 include("geometry.jl")
 include("material.jl")
 include("lights.jl")
+include("camera.jl")
 include("patchwork.jl")
 
 #Setting up three js files required to display stuff.

@@ -257,3 +257,21 @@ function draw(img::Patchable3D, light::SpotLight)
     )
     elem
 end
+
+# Cameras
+# -------
+
+function draw(img::Patchable3D, camera::PerspectiveCamera)
+    elem = Elem(
+        :"three-js-camera",
+        x=camera.position.x[1].value,
+        y=camera.position.x[2].value,
+        z=camera.position.x[3].value,
+        fov=camera.fov,
+        aspect=camera.fov,
+        near=camera.near,
+        far=camera.far,
+        kind="perspective"
+    )
+    elem
+end

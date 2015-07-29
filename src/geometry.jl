@@ -134,3 +134,33 @@ function resolve(box::Absolute3DBox, torus::TorusPrimitive)
     abstube = resolve(box, torus.tubediameter)mm
     TorusPrimitive(abscenter, absradius, abstube)
 end
+
+immutable ParametricPrimitive <: GeometryPrimitive
+    origin::Point{3}
+    f::Function
+    slices::Integer
+    stacks::Integer
+end
+
+typealias Parametric Geometry{ParametricPrimitive}
+
+ParametricPrimitive(
+    x::Length,y::Length,z::Length,f::Function,slices::Integer,stacks::Integer)=
+    ParametricPrimitive(Point(x,y,z),f,slices,stacks)
+
+parametric(
+    x::Length,y::Length,z::Length,f::Function,slices::Integer,stacks::Integer)=
+        ParametricPrimitive(x,y,z,f,slices,stacks)
+
+parametric(f::Function,slices::Integer,stacks::Integer)=
+        ParametricPrimitive(0mm,0mm,0mm,f,slices,stacks)
+
+function resolve(box::Absolute3DBox, parametricsurf::ParametricPrimitive)
+    absorigin = Point(resolve(box, parametricsurf.origin))
+    ParametricPrimitive(
+        absorigin,
+        parametricsurf.f,
+        parametricsurf.slices,
+        parametricsurf.stacks
+    )
+end

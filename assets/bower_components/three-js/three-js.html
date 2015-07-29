@@ -73,6 +73,7 @@
           this.controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
           //console.log(child.object);
         }
+        //console.log(child.object);
         this.scene.add(child.object);
         this.invalidate();
       },
@@ -194,10 +195,10 @@
         this.lookAtChanged();
       },
       lookAtChanged: function() {
-        var node = this.parentNode.querySelector(this.lookAt);
-        if (node /*&& node.object*/) {
-          this.object.lookAt(node);
-        }
+        //var node = this.parentNode.querySelector(this.lookAt);
+        //if (node /*&& node.object*/) {
+          //this.object.lookAt(node);
+        //}
       }
     });
   </script>
@@ -217,7 +218,7 @@
       distance: 0,
       angle: 60,
       exponent: 8,
-      ready: function() {
+      attached: function() {
         var kind = this.kinds[this.kind] || this.kinds.point;
         //console.log(kind);
         this.object = new THREE[kind](this.color, this.intensity, this.distance, this.angle * Math.PI/180, this.exponent);
@@ -231,6 +232,7 @@
           this.object.shadowBias = 0.0001;
           this.object.shadowDarkness = 0.5;
         }
+        this.addToParent3();
       },
       updatePosition: function() {
         this.super();
@@ -293,6 +295,7 @@
         basic: 'MeshBasicMaterial',
         lambert: 'MeshLambertMaterial',
         phong: 'MeshPhongMaterial',
+        normal: 'MeshNormalMaterial',
         texture: 'texture'
       },
       sides: {
@@ -448,6 +451,83 @@
   </script>
 </polymer-element>
 
+<polymer-element name="three-js-parametric" attributes="slices stacks">
+  <script>
+    Polymer('three-js-parametric', {
+      domReady: function() {
+        this.newGeo();
+      },
+      newGeo : function() {
+        this.object = new THREE.Geometry();
+        var verts = this.object.vertices;
+	    var faces = this.object.faces;
+	    var uvs = this.object.faceVertexUvs[ 0 ];
+        
+        this.count = 0; //Keep track of number of vertices added. 
+
+        var i, j, p;
+	    var u, v;
+        
+        var slices = Number(this.slices);
+        var stacks = Number(this.stacks);
+        //console.log(slices, stacks);
+        this.length = (slices+1) * (stacks+1); //Total number of vertices.
+	    var sliceCount = slices + 1;
+        var a, b, c, d;
+	    var uva, uvb, uvc, uvd;
+
+    	for ( i = 0; i < stacks; i ++ ) {
+
+            for ( j = 0; j < slices; j ++ ) {
+                a = i * sliceCount + j;
+                b = i * sliceCount + j + 1;
+                c = (i + 1) * sliceCount + j + 1;
+                d = (i + 1) * sliceCount + j;
+
+                uva = new THREE.Vector2( j / slices, i / stacks );
+                uvb = new THREE.Vector2( ( j + 1 ) / slices, i / stacks );
+                uvc = new THREE.Vector2( ( j + 1 ) / slices, ( i + 1 ) / stacks );
+                uvd = new THREE.Vector2( j / slices, ( i + 1 ) / stacks );
+
+                faces.push( new THREE.Face3( a, b, d ) );
+                uvs.push( [ uva, uvb, uvd ] );
+
+                faces.push( new THREE.Face3( b, c, d ) );
+                uvs.push( [ uvb.clone(), uvc, uvd.clone() ] );
+
+		    }
+	    }
+      },
+      addVertex : function(vertex) {
+        this.object.vertices.push(vertex.object);
+        this.count++;
+        if (this.count == this.length){
+            this.object.computeFaceNormals();
+            this.object.computeVertexNormals();
+            this.fire('three-js-geometry-changed', this.object);
+        }
+      }
+    });
+  </script>
+</polymer-element>
+
+<polymer-element name="three-js-vertex" attributes="x y z color">
+  <script>
+    Polymer('three-js-vertex', {
+      domReady: function() {
+        this.object = new THREE.Vector3(this.x,this.y,this.z);
+        this.addToGeom();     
+    },
+      addToGeom: function(){
+          this.objectParent = this.parentNode;
+          this.parentNode.addVertex(this);
+          console.log('[%s]: added to threejs-geometry parent', this.localName + (this.id ? '#' + this.id : ''));
+    }
+  });
+  </script>
+
+</polymer-element>
+
 <polymer-element name="three-js-pyramid" attributes="base height">
   <script>
     Polymer('three-js-pyramid', {
@@ -476,23 +556,8 @@
       pyramid.computeFaceNormals();
       pyramid.computeBoundingSphere();
       this.object = pyramid;
-      this.fire('three-js-geometry-changed', this.object);
+//      this.fire('three-js-geometry-changed', this.object);
     },
     });
   </script>
 </polymer-element>
-
-<!-- prototype chain not supported for second argument to Polymer() -->
-
-<!--<polymer-element name="real-three-js-light">
-  <script>
-    (function() {
-      var proto = Object.create(THREE.PointLight.prototype);
-      proto.ready = function() {
-        THREE.PointLight.call(this);
-        //console.dir(this);
-      }
-      Polymer('real-three-js-light', proto);
-    })();
-  </script>
-</polymer-element>-->

@@ -197,6 +197,22 @@ function draw(backend::Patchable3D, torus::TorusPrimitive)
     elem
 end
 
+function draw(backend::Patchable3D, p::ParametricPrimitive)
+    x = p.origin.x[1].value
+    y = p.origin.x[2].value
+    z = p.origin.x[3].value
+
+    mesh = Elem(:"three-js-mesh",x=x,y=y,z=z,)
+    geom = Elem(:"three-js-parametric",slices=p.slices,stacks=p.stacks)
+
+    xrange = linspace(p.xrange.start,p.xrange.stop,p.slices+1)
+    yrange = linspace(p.yrange.start,p.yrange.stop,p.stacks+1)
+    vertices=[Elem(:"three-js-vertex",x=x,y=y,z=p.f(x,y)) for x=xrange,y=yrange]
+
+    geom = geom << vertices
+    mesh << geom
+end
+
 # Material primitives
 # -------------------
 

@@ -207,7 +207,7 @@ function draw(backend::Patchable3D, p::ParametricPrimitive)
 
     xrange = linspace(p.xrange.start,p.xrange.stop,p.slices+1)
     yrange = linspace(p.yrange.start,p.yrange.stop,p.stacks+1)
-    vertices=[Elem(:"three-js-vertex",x=x,y=y,z=p.f(x,y)) for x=xrange,y=yrange]
+    vertices=[Elem(:"three-js-vertex",x=x,z=y,y=p.f(x,y)) for x=xrange,y=yrange]
 
     geom = geom << vertices
     mesh << geom

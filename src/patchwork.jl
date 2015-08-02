@@ -237,6 +237,17 @@ function draw(img::Patchable3D, prim::MeshColor)
     :color, color
 end
 
+function draw(img::Patchable3D, wireframe::WireFrameMesh)
+    :wireframe, wireframe.wireframe
+end
+
+function draw(img::Patchable3D, normal::NormalMaterial)
+    if normal.normal
+        return :kind, "normal"
+    end
+    :normal, false #Dummy return. Doesn't affect the material tag.
+end
+
 # Lights
 # ------
 

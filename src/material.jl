@@ -1,5 +1,7 @@
 using Color
 
+export normalcolors
+
 abstract MaterialPrimitive
 
 immutable Material{P<:MaterialPrimitive} <: Compose3DNode
@@ -10,10 +12,6 @@ isscalar(material::Material) = length(material.primitives) == 1
 
 immutable MeshColor <: MaterialPrimitive
     color::RGB{Float64}
-end
-
-immutable WireFrameMesh <: MaterialPrimitive
-    wireframe::Bool
 end
 
 function mesh_color(color::RGB{Float64})
@@ -28,6 +26,18 @@ function mesh_color(colorString::String)
     Material([MeshColor(color(colorString))])
 end
 
+immutable WireFrameMesh <: MaterialPrimitive
+    wireframe::Bool
+end
+
 function wireframe(wireframe::Bool)
     Material([WireFrameMesh(wireframe)])
+end
+
+immutable NormalMaterial <: MaterialPrimitive
+    normal::Bool
+end
+
+function normalcolors(bool::Bool)
+    Material([NormalMaterial(bool)])
 end

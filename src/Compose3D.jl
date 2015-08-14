@@ -9,6 +9,11 @@ import Base: length, start, next, done, isempty, getindex, setindex!,
              display, writemime, convert, zero, isless, max, fill, size, copy,
              min, max, +, -, *, /
 
+#exporting types and functions to be used by the user on importing the module
+export Point, Length, BoundingBox, AbsoluteBox, Context, mm, cm, inch, pt, w, h,
+       d, cube, box, compose, draw, sphere, pyramid, mesh_color, 
+       wireframe, cylinder, torus, parametric
+
 import Patchwork: Elem
 
 #Including files.
@@ -19,7 +24,7 @@ include("geometry.jl")
 include("material.jl")
 include("lights.jl")
 include("camera.jl")
-include("patchwork.jl")
+include("patchable.jl")
 
 #Setting up three js files required to display stuff.
 #Link to the static files copied to the julia profile if in an IJulia session.
@@ -36,10 +41,5 @@ function writemime(io::IO,mime::MIME{symbol("text/html")},ctx::Context)
         draw(Patchable3D(100,100),ctx)
 	display(backend)
 end
-
-#exporting types and functions to be used by the user on importing the module
-export Point, Length, BoundingBox, AbsoluteBox, Context, mm, cm, inch, pt, w, h,
-       d, cube, box, compose, draw, sphere, pyramid, mesh_color, 
-       wireframe, cylinder, torus, parametric
 
 end # module

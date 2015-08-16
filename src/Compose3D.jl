@@ -1,5 +1,8 @@
 module Compose3D
+
 using Compat
+using Measures
+
 # Defining compose node type
 abstract Compose3DNode
 
@@ -9,15 +12,17 @@ import Base: length, start, next, done, isempty, getindex, setindex!,
              display, writemime, convert, zero, isless, max, fill, size, copy,
              min, max, +, -, *, /
 
+import Measures: resolve, w, h, d
+
 #exporting types and functions to be used by the user on importing the module
-export Point, Length, BoundingBox, AbsoluteBox, Context, mm, cm, inch, pt, w, h,
-       d, cube, box, compose, draw, sphere, pyramid, mesh_color, 
-       wireframe, cylinder, torus, parametric
+export Context, mm, cm, inch, pt, w, h, d, cube, box, compose, draw, sphere,
+       pyramid, mesh_color, wireframe, cylinder, torus, parametric
 
 import Patchwork: Elem
 
 #Including files.
-include("measure.jl")
+
+
 include("list.jl")
 include("container.jl")
 include("geometry.jl")

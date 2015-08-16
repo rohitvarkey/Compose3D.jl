@@ -288,7 +288,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-material" attributes="kind color side texture ambient specular shine shading wireframe">
+<polymer-element name="three-js-material" attributes="kind color side texture ambient specular shine shading wireframe visible">
   <script>
     Polymer('three-js-material', {
       kinds: {
@@ -345,7 +345,8 @@
               shininess: this.shine,
               ambient: this.ambient,
               shading: THREE[shading],
-              wireframe: this.wireframe
+              wireframe: this.wireframe,
+              visible: this.visible
             });
             break;
         }
@@ -418,7 +419,7 @@
       observe: {
         'top' : 'newGeo',
         'bottom' : 'newGeo',
-        'height' : 'newGeo', 
+        'height' : 'newGeo',
       },
       ready: function() {
         this.object = new THREE.CylinderGeometry(this.top,this.bottom,this.height, 32, 16);
@@ -439,7 +440,7 @@
       r : 10,
       observe: {
         'tube' : 'newGeo',
-        'r' : 'newGeo', 
+        'r' : 'newGeo',
       },
       ready: function() {
         this.object = new THREE.TorusGeometry(this.r,this.tube, 32, 32);
@@ -464,12 +465,12 @@
         var verts = this.object.vertices;
 	    var faces = this.object.faces;
 	    var uvs = this.object.faceVertexUvs[ 0 ];
-        
-        this.count = 0; //Keep track of number of vertices added. 
+
+        this.count = 0; //Keep track of number of vertices added.
 
         var i, j, p;
 	    var u, v;
-        
+
         var slices = Number(this.slices);
         var stacks = Number(this.stacks);
         //console.log(slices, stacks);
@@ -534,7 +535,7 @@
       },
       domReady: function() {
         this.object = new THREE.Vector3(this.x,this.y,this.z);
-        this.addToGeom();     
+        this.addToGeom();
       },
       addToGeom: function(){
           this.objectParent = this.parentNode;
@@ -580,7 +581,7 @@
       pyramid.computeFaceNormals();
       pyramid.computeBoundingSphere();
       this.object = pyramid;
-//      this.fire('three-js-geometry-changed', this.object);
+      this.fire('three-js-geometry-changed', this.object);
     },
     });
   </script>

@@ -130,9 +130,9 @@ function draw(backend::Patchable3D, cube::BoxPrimitive)
     width= cube.width.value
     height = cube.height.value
     depth = cube.depth.value
-    x = cube.center.x[1].value
-    y = cube.center.x[2].value
-    z = cube.center.x[3].value
+    x = cube.center[1].value
+    y = cube.center[2].value
+    z = cube.center[3].value
     
     elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
     [
@@ -143,9 +143,9 @@ end
 
 function draw(backend::Patchable3D, sphere::SpherePrimitive)
     radius = sphere.radius.value
-    x = sphere.center.x[1].value
-    y = sphere.center.x[2].value
-    z = sphere.center.x[3].value
+    x = sphere.center[1].value
+    y = sphere.center[2].value
+    z = sphere.center[3].value
     
     elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
     [
@@ -157,9 +157,9 @@ end
 function draw(backend::Patchable3D, pyramid::PyramidPrimitive)
     height = pyramid.height.value
     base = pyramid.base.value
-    x = pyramid.corner.x[1].value
-    y = pyramid.corner.x[2].value
-    z = pyramid.corner.x[3].value
+    x = pyramid.corner[1].value
+    y = pyramid.corner[2].value
+    z = pyramid.corner[3].value
     
     elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
     [
@@ -172,9 +172,9 @@ function draw(backend::Patchable3D, cylinder::CylinderPrimitive)
     top = cylinder.topradius.value
     bottom = cylinder.bottomradius.value
     height = cylinder.height.value
-    x = cylinder.center.x[1].value
-    y = cylinder.center.x[2].value
-    z = cylinder.center.x[3].value
+    x = cylinder.center[1].value
+    y = cylinder.center[2].value
+    z = cylinder.center[3].value
     
     elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
     [
@@ -186,9 +186,9 @@ end
 function draw(backend::Patchable3D, torus::TorusPrimitive)
     radius = torus.radius.value
     tube = torus.tubediameter.value
-    x = torus.center.x[1].value
-    y = torus.center.x[2].value
-    z = torus.center.x[3].value
+    x = torus.center[1].value
+    y = torus.center[2].value
+    z = torus.center[3].value
     
     elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
     [
@@ -198,9 +198,9 @@ function draw(backend::Patchable3D, torus::TorusPrimitive)
 end
 
 function draw(backend::Patchable3D, p::ParametricPrimitive)
-    x = p.origin.x[1].value
-    y = p.origin.x[2].value
-    z = p.origin.x[3].value
+    x = p.origin[1].value
+    y = p.origin[2].value
+    z = p.origin[3].value
 
     mesh = Elem(:"three-js-mesh",x=x,y=y,z=z,)
     geom = Elem(:"three-js-parametric",slices=p.slices,stacks=p.stacks)
@@ -270,9 +270,9 @@ function draw(img::Patchable3D, light::PointLight)
         color=color, 
         intensity=light.intensity,
         distance=light.distance.value,
-        x=light.position.x[1].value,
-        y=light.position.x[2].value,
-        z=light.position.x[3].value,
+        x=light.position[1].value,
+        y=light.position[2].value,
+        z=light.position[3].value,
     )
     elem
 end
@@ -288,9 +288,9 @@ function draw(img::Patchable3D, light::SpotLight)
         angle=light.angle,
         exponent=light.exponent,
         shadow=light.shadow,
-        x=light.position.x[1].value,
-        y=light.position.x[2].value,
-        z=light.position.x[3].value,
+        x=light.position[1].value,
+        y=light.position[2].value,
+        z=light.position[3].value,
     )
     elem
 end
@@ -301,9 +301,9 @@ end
 function draw(img::Patchable3D, camera::PerspectiveCamera)
     elem = Elem(
         :"three-js-camera",
-        x=camera.position.x[1].value,
-        y=camera.position.x[2].value,
-        z=camera.position.x[3].value,
+        x=camera.position[1].value,
+        y=camera.position[2].value,
+        z=camera.position[3].value,
         fov=camera.fov,
         aspect=camera.fov,
         near=camera.near,

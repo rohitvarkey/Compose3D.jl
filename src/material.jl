@@ -1,6 +1,6 @@
 using Color
 
-export normalcolors
+export normalcolors, lambert
 
 abstract MaterialPrimitive
 
@@ -41,3 +41,12 @@ end
 function normalcolors(bool::Bool)
     Material([NormalMaterial(bool)])
 end
+
+immutable LambertMaterial <: MaterialPrimitive
+    lambert::Bool
+end
+
+function lambert(bool::Bool)
+    Material([LambertMaterial(bool)])
+end
+

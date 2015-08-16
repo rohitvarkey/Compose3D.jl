@@ -248,6 +248,13 @@ function draw(img::Patchable3D, normal::NormalMaterial)
     :normal, false #Dummy return. Doesn't affect the material tag.
 end
 
+function draw(img::Patchable3D, lambert::LambertMaterial)
+    if lambert.lambert
+        return :kind, "lambert"
+    end
+    :lambert, false #Dummy return. Doesn't affect the material tag.
+end
+
 # Lights
 # ------
 

@@ -241,18 +241,8 @@ function draw(img::Patchable3D, wireframe::WireFrameMesh)
     :wireframe, wireframe.wireframe
 end
 
-function draw(img::Patchable3D, normal::NormalMaterial)
-    if normal.normal
-        return :kind, "normal"
-    end
-    :normal, false #Dummy return. Doesn't affect the material tag.
-end
-
-function draw(img::Patchable3D, lambert::LambertMaterial)
-    if lambert.lambert
-        return :kind, "lambert"
-    end
-    :lambert, false #Dummy return. Doesn't affect the material tag.
+function draw(img::Patchable3D, kind::MaterialKind)
+    return :kind, kind.kind
 end
 
 # Lights

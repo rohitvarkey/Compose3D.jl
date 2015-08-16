@@ -1,6 +1,6 @@
 using Color
 
-export normalcolors, lambert
+export normalcolors, lambert, basic, phong
 
 abstract MaterialPrimitive
 
@@ -34,19 +34,23 @@ function wireframe(wireframe::Bool)
     Material([WireFrameMesh(wireframe)])
 end
 
-immutable NormalMaterial <: MaterialPrimitive
-    normal::Bool
+immutable MaterialKind <: MaterialPrimitive
+    kind::String
 end
 
-function normalcolors(bool::Bool)
-    Material([NormalMaterial(bool)])
+function normalcolors()
+    Material([MaterialKind("normal")])
 end
 
-immutable LambertMaterial <: MaterialPrimitive
-    lambert::Bool
+function lambert()
+    Material([MaterialKind("lambert")])
 end
 
-function lambert(bool::Bool)
-    Material([LambertMaterial(bool)])
+function basic()
+    Material([MaterialKind("basic")])
+end
+
+function phong()
+    Material([MaterialKind("phong")])
 end
 

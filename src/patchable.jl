@@ -245,6 +245,10 @@ function draw(img::Patchable3D, kind::MaterialKind)
     return :kind, kind.kind
 end
 
+function draw(img::Patchable3D, visibility::Visiblity)
+    return :visible, visibility.visible
+end
+
 # Lights
 # ------
 

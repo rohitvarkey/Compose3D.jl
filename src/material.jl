@@ -1,6 +1,6 @@
 using Color
 
-export normalcolors, lambert, basic, phong
+export normalcolors, lambert, basic, phong, visible
 
 abstract MaterialPrimitive
 
@@ -54,3 +54,11 @@ function phong()
     Material([MaterialKind("phong")])
 end
 
+
+immutable Visiblity <: MaterialPrimitive
+    visible::Bool
+end
+
+function visible(visible::Bool)
+    Material([Visiblity(visible)])
+end

@@ -1,6 +1,6 @@
 using Color
 
-export normalcolors, lambert, basic, phong, visible
+export normalcolors, lambert, basic, phong, visible, edges
 
 abstract MaterialPrimitive
 
@@ -61,4 +61,20 @@ end
 
 function visible(visible::Bool)
     Material([Visiblity(visible)])
+end
+
+immutable Edges <: MaterialPrimitive
+    color::RGB{Float64}
+end
+
+function edges(color::RGB{Float64})
+    Material([Edges(color)])
+end
+
+function edges(color::ColorValue)
+    Material([Edges(convert(RGB{Float64},color))])
+end
+
+function edges(colorString::String="black")
+    Material([Edges(color(colorString))])
 end

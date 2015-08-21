@@ -242,13 +242,16 @@ function draw(img::Patchable3D, wireframe::WireFrameMesh)
 end
 
 function draw(img::Patchable3D, kind::MaterialKind)
-    return :kind, kind.kind
+    :kind, kind.kind
 end
 
 function draw(img::Patchable3D, visibility::Visiblity)
-    return :visible, visibility.visible
+    :visible, visibility.visible
 end
 
+function draw(img::Patchable3D, edges::Edges)
+    :edges, "true" #Make this return edgeColor also.
+end
 # Lights
 # ------
 

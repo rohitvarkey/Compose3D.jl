@@ -6,8 +6,8 @@ import Patchwork.Elem
 export Patchable3D
 
 type Patchable3D <: Backend
-    width::Float64 #shouldn't these be mm?
-    height::Float64 
+    width::Float64
+    height::Float64
     material_tag::Elem{:xhtml,symbol("three-js-material")} #Current materials in effect
     vector_properties::Vector
     lights::Bool
@@ -314,4 +314,27 @@ function draw(img::Patchable3D, camera::PerspectiveCamera)
         kind="perspective"
     )
     elem
+end
+
+#writemime for signals.
+if isinstalled("Reactive")
+
+    import Base: writemime
+    import Reactive: Signal, lift
+
+    if isdefined(Main, :IJulia)
+        import IJulia: metadata
+        metadata{T <: Compose3DNode}(::Signal{T}) = Dict()
+    end
+
+    function writemime{T <: Compose3DNode}(io::IO, m::MIME"text/html", ctx::Signal{T})
+        writemime(io, m, lift(c ->
+        Elem(:div, style=@compat Dict(:width=>"100%", :height=>"600px")) <<
+            draw(
+                Patchable3D(
+                    100,
+                    100,
+                ), c), ctx)
+        )
+    end
 end

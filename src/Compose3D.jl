@@ -20,6 +20,21 @@ export Context, mm, cm, inch, pt, w, h, d, cube, box, compose, draw, sphere,
 
 import Patchwork: Elem
 
+function isinstalled(pkg, ge=v"0.0.0")
+    try
+        # Pkg.installed might throw an error,
+        # we need to account for it to be able to precompile
+        ver = Pkg.installed(pkg)
+        if ver != nothing && ver >= ge
+            return true
+        else
+            return false
+        end
+    catch
+        return false
+    end
+end
+
 #Including files.
 
 
@@ -40,6 +55,7 @@ if isdefined(Main, :IJulia)
     )
 end
 #TODO: Make Escher take care of the other cases.
+
 
 function writemime(io::IO,mime::MIME{symbol("text/html")},ctx::Context)
 	backend= Elem(:div, style=@compat Dict(:width=>"100%", :height=>"600px")) <<

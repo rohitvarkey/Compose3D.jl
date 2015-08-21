@@ -75,6 +75,9 @@
         }
         //console.log(child.object);
         this.scene.add(child.object);
+        if (child.additionalObject){
+            this.scene.add(child.additionalObject);
+        }
         this.invalidate();
       },
       remove3: function(child) {
@@ -242,9 +245,11 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-mesh" extends="three-js-object" on-three-js-material-changed="{{doMaterialChanged}}" on-three-js-geometry-changed="{{doGeometryChanged}}">
+<polymer-element name="three-js-mesh" extends="three-js-object" on-three-js-material-changed="{{doMaterialChanged}}" on-three-js-geometry-changed="{{doGeometryChanged}}" >
   <script>
-    Polymer('three-js-mesh', {
+      Polymer('three-js-mesh', {
+      edges: false,
+      additionalObject: false,
       ready: function() {
         //this.validate();
         this.observeDOM();
@@ -266,8 +271,16 @@
           if (this.geometry && this.material) {
             //this.removeFromParent3();
             this.object = new THREE.Mesh(this.geometry, this.material);
+            var m = this.querySelector('three-js-material');
+            console.log(m);
+            console.log(m.edges);
+            if(m.edges)
+            {
+                console.log("Creating Edges");
+                m.createEdges(this.object);
+            }
             this.addToParent3();
-          }
+        }
       },
       lightDomReady: function() {
         // stub out super class version, we don't enter the
@@ -288,7 +301,7 @@
   </script>
 </polymer-element>
 
-<polymer-element name="three-js-material" attributes="kind color side texture ambient specular shine shading wireframe visible">
+<polymer-element name="three-js-material" attributes="kind color side texture ambient specular shine shading wireframe visible edges edgeColor">
   <script>
     Polymer('three-js-material', {
       kinds: {
@@ -312,11 +325,17 @@
       color: 0x1EC876,
       texture: '',
       wireframe:false,
+      visible:true,
+      edgeColor: 0x000000,
       attached: function() {
         this.async(function() {
           //console.log('[%s]: lightDomReady', this.localName);
           this.lightDomReady();
         });
+      },
+      detached: function() {
+        this.removeFromParent3();
+        this.removeEdgesFromParent3();
       },
       lightDomReady: function() {
         this.init();
@@ -347,8 +366,28 @@
               shading: THREE[shading],
               wireframe: this.wireframe,
               visible: this.visible
-            });
+              });
             break;
+            }
+            this.object.visible = this.visible
+      },
+      createEdges: function(mesh){
+            if(mesh){
+                this.edgesObject = new THREE.EdgesHelper(mesh,this.edgeColor);
+                this.addEdgeToParent3();
+            }
+        },
+        addEdgeToParent3: function() {
+        if (this.parentNode.parentNode.add3 && !this.edgeParent) {
+          this.edgeParent = this.parentNode.parentNode;
+          this.edgeParent.scene.add(this.edgesObject);
+        }
+      },
+      removeEdgesFromParent3: function() {
+        if (this.edgeParent) {
+          this.edgeParent.scene.remove(this.edgesObject);
+          this.edgeParent = null;
+          //console.log('[%s]: REMOVED from threejs-object parent', this.localName + (this.id ? '#' + this.id : ''));
         }
       },
       objectChanged: function() {
@@ -360,6 +399,37 @@
     });
   </script>
 </polymer-element>
+
+<polymer-element name="three-js-edges" attributes="color">
+  <script>
+    Polymer('three-js-edges', {
+        color: 0x000000,
+        lightDomReady : function(){
+        },
+        createEdges: function(mesh){
+            if(mesh){
+                this.object = new THREE.EdgesHelper(mesh,this.color);
+                this.addToParent3();
+            }
+        },
+        addToParent3: function() {
+        if (this.parentNode.parentNode.add3 && !this.objectParent) {
+          this.objectParent = this.parentNode.parentNode;
+          this.parentNode.parentNode.add3(this);
+        }
+      },
+      removeFromParent3: function() {
+        if (this.objectParent) {
+          this.objectParent.remove3(this);
+          this.objectParent = null;
+          //console.log('[%s]: REMOVED from threejs-object parent', this.localName + (this.id ? '#' + this.id : ''));
+        }
+      },
+
+      });
+  </script>
+</polymer-element>
+
 
 <polymer-element name="three-js-box" attributes="w h d extent">
   <script>

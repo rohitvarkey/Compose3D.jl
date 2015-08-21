@@ -53,6 +53,7 @@ function draw_recursive(backend::Backend, root_canvas::Context)
     # Checks for contexts, and geometries and resolves and draws them as needed.
     children = root_canvas.children
     parent_box = root_canvas.box
+    material = backend.material_tag
     vector_properties = Dict{Type, Material}()
     acc = nothing
 
@@ -89,6 +90,7 @@ function draw_recursive(backend::Backend, root_canvas::Context)
         backend = pop_material_frame(backend)
     end
 
+    backend.material_tag = material
     acc
 end
 

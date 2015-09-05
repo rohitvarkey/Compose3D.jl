@@ -86,20 +86,19 @@ function draw(backend::Patchable3D, root::Context)
         end
     end
 
-    root = Elem(:"three-js",
+    root = ThreeJS.initscene() <<
         [
             draw_recursive(backend, root);
         ]
-        )
     #TODO: Make this better by figuring out max and min x,y and z.
-        if camera == nothing
-        root = root << Elem(:"three-js-camera",x=-20,y=0,z=25);
+    if camera == nothing
+        root = root << ThreeJS.camera(-20.0, 0.0, 25.0);
     else
         root = root << draw(backend,camera)
     end
     if !(backend.lights)
-       root = root << Elem(:"three-js-light",kind="spot",x=0,y=-30,z=0) 
-       root = root << Elem(:"three-js-light",kind="spot",x=-0,y=20,z=0)
+       root = root << ThreeJS.spotlight(0.0, -30.0, 0.0)
+       root = root << ThreeJS.spotlight(0.0, 20.0, 0.0)
     end
     root
 end
@@ -134,10 +133,8 @@ function draw(backend::Patchable3D, cube::BoxPrimitive)
     y = cube.center[2].value
     z = cube.center[3].value
     
-    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
-    [
-        Elem(:"three-js-box",w=width,h=height,d=depth),
-    ])
+    elem = ThreeJS.mesh(x, y, z) <<
+        ThreeJS.box(width, height, depth)
     elem
 end
 
@@ -147,10 +144,8 @@ function draw(backend::Patchable3D, sphere::SpherePrimitive)
     y = sphere.center[2].value
     z = sphere.center[3].value
     
-    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
-    [
-        Elem(:"three-js-sphere",r=radius),
-    ])
+    elem = ThreeJS.mesh(x, y, z) <<
+        ThreeJS.sphere(radius)
     elem
 end
 
@@ -161,10 +156,8 @@ function draw(backend::Patchable3D, pyramid::PyramidPrimitive)
     y = pyramid.corner[2].value
     z = pyramid.corner[3].value
     
-    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
-    [
-        Elem(:"three-js-pyramid",base=base, height=height),
-    ])
+    elem = ThreeJS.mesh(x, y, z) <<
+        ThreeJS.pyramid(base, height)
     elem
 end
 
@@ -176,10 +169,8 @@ function draw(backend::Patchable3D, cylinder::CylinderPrimitive)
     y = cylinder.center[2].value
     z = cylinder.center[3].value
     
-    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
-    [
-        Elem(:"three-js-cylinder",top=top, bottom=bottom, height=height),
-    ])
+    elem = ThreeJS.mesh(x, y, z) <<
+        ThreeJS.cylinder(top, bottom, height)
     elem
 end
 
@@ -190,10 +181,8 @@ function draw(backend::Patchable3D, torus::TorusPrimitive)
     y = torus.center[2].value
     z = torus.center[3].value
     
-    elem = Elem(:"three-js-mesh",x=x,y=y,z=z,
-    [
-        Elem(:"three-js-torus",r=radius, tube=tube),
-    ])
+    elem = ThreeJS.mesh(x, y, z) <<
+        ThreeJS.torus(radius, tube)
     elem
 end
 
@@ -202,19 +191,14 @@ function draw(backend::Patchable3D, p::ParametricPrimitive)
     y = p.origin[2].value
     z = p.origin[3].value
 
-    mesh = Elem(:"three-js-mesh",x=x,y=y,z=z,)
+    mesh = ThreeJS.mesh(x, y, z)
 
     if p.mesh
-        geom = Elem(:"three-js-meshlines",slices=p.slices,stacks=p.stacks)
+        geom = ThreeJS.meshlines(p.slices,p.stacks,p.xrange,p.yrange,p.f)
     else
-        geom = Elem(:"three-js-parametric",slices=p.slices,stacks=p.stacks)
+        geom = ThreeJS.parametric(p.slices,p.stacks,p.xrange,p.yrange,p.f)
     end
 
-    xrange = linspace(p.xrange.start,p.xrange.stop,p.slices+1)
-    yrange = linspace(p.yrange.start,p.yrange.stop,p.stacks+1)
-    vertices=[Elem(:"three-js-vertex",x=x,z=y,y=p.f(x,y)) for x=xrange,y=yrange]
-
-    geom = geom << vertices
     mesh << geom
 end
 
@@ -266,59 +250,49 @@ end
 
 function draw(img::Patchable3D, light::AmbientLight)
     color = string("#" * hex(light.color))
-    elem = Elem(:"three-js-light", kind="ambient", color=color)
-    elem
+    ThreeJS.ambient(color)
 end
 
 function draw(img::Patchable3D, light::PointLight)
     color = string("#" * hex(light.color))
-    elem = Elem(
-        :"three-js-light", 
-        kind="point", 
+    ThreeJS.point(
+        light.position[1].value,
+        light.position[2].value,
+        light.position[3].value,
         color=color, 
         intensity=light.intensity,
         distance=light.distance.value,
-        x=light.position[1].value,
-        y=light.position[2].value,
-        z=light.position[3].value,
     )
-    elem
 end
 
 function draw(img::Patchable3D, light::SpotLight)
     color = string("#" * hex(light.color))
-    elem = Elem(
-        :"three-js-light", 
-        kind="spot", 
+    ThreeJS.spotlight(
+        light.position[1].value,
+        light.position[2].value,
+        light.position[3].value,
         color=color, 
         intensity=light.intensity,
         distance=light.distance.value,
         angle=light.angle,
         exponent=light.exponent,
         shadow=light.shadow,
-        x=light.position[1].value,
-        y=light.position[2].value,
-        z=light.position[3].value,
     )
-    elem
 end
 
 # Cameras
 # -------
 
 function draw(img::Patchable3D, camera::PerspectiveCamera)
-    elem = Elem(
-        :"three-js-camera",
-        x=camera.position[1].value,
-        y=camera.position[2].value,
-        z=camera.position[3].value,
+    ThreeJS.camera(
+        camera.position[1].value,
+        camera.position[2].value,
+        camera.position[3].value,
         fov=camera.fov,
         aspect=camera.fov,
         near=camera.near,
         far=camera.far,
-        kind="perspective"
     )
-    elem
 end
 
 #writemime for signals.
@@ -334,7 +308,7 @@ if isinstalled("Reactive")
 
     function writemime{T <: Compose3DNode}(io::IO, m::MIME"text/html", ctx::Signal{T})
         writemime(io, m, lift(c ->
-        Elem(:div, style=@compat Dict(:width=>"100%", :height=>"600px")) <<
+        outerdiv <<
             draw(
                 Patchable3D(
                     100,

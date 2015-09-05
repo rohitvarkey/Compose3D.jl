@@ -2,6 +2,7 @@ module Compose3D
 
 using Compat
 using Measures
+using ThreeJS
 
 # Defining compose node type
 abstract Compose3DNode
@@ -36,8 +37,6 @@ function isinstalled(pkg, ge=v"0.0.0")
 end
 
 #Including files.
-
-
 include("list.jl")
 include("container.jl")
 include("geometry.jl")
@@ -46,20 +45,9 @@ include("lights.jl")
 include("camera.jl")
 include("patchable.jl")
 
-#Setting up three js files required to display stuff.
-#Link to the static files copied to the julia profile if in an IJulia session.
-if isdefined(Main, :IJulia)
-    display(
-        MIME"text/html"(),
-        "<link rel=import href=/static/components/compose3d/bower_components/three-js/three-js.html>"
-    )
-end
-#TODO: Make Escher take care of the other cases.
-
-
-function writemime(io::IO,mime::MIME{symbol("text/html")},ctx::Context)
-	backend= Elem(:div, style=@compat Dict(:width=>"100%", :height=>"600px")) <<
-        draw(Patchable3D(100,100),ctx)
+function writemime(io::IO, mime::MIME{symbol("text/html")}, ctx::Context)
+	backend = ThreeJS.outerdiv() <<
+        draw(Patchable3D(100, 100), ctx)
 	display(backend)
 end
 

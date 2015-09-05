@@ -203,7 +203,12 @@ function draw(backend::Patchable3D, p::ParametricPrimitive)
     z = p.origin[3].value
 
     mesh = Elem(:"three-js-mesh",x=x,y=y,z=z,)
-    geom = Elem(:"three-js-parametric",slices=p.slices,stacks=p.stacks)
+
+    if p.mesh
+        geom = Elem(:"three-js-meshlines",slices=p.slices,stacks=p.stacks)
+    else
+        geom = Elem(:"three-js-parametric",slices=p.slices,stacks=p.stacks)
+    end
 
     xrange = linspace(p.xrange.start,p.xrange.stop,p.slices+1)
     yrange = linspace(p.yrange.start,p.yrange.stop,p.stacks+1)

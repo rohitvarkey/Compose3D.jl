@@ -142,22 +142,23 @@ immutable ParametricPrimitive <: GeometryPrimitive
     stacks::Integer
     xrange::Range
     yrange::Range
+    mesh::Bool
 end
 
 typealias Parametric Geometry{ParametricPrimitive}
 
 ParametricPrimitive(
     x::Length,y::Length,z::Length,f::Function,slices::Integer,stacks::Integer,
-    xrange::Range, yrange::Range)=
-    ParametricPrimitive((x,y,z),f,slices,stacks, xrange, yrange)
+    xrange::Range, yrange::Range, mesh::Bool)=
+    ParametricPrimitive((x,y,z),f,slices,stacks, xrange, yrange, mesh)
 
 parametric(
     x::Length,y::Length,z::Length,f::Function,slices::Integer,stacks::Integer,
-    xrange::Range, yrange::Range)=
-        Parametric([ParametricPrimitive(x,y,z,f,slices,stacks)])
+    xrange::Range, yrange::Range; mesh::Bool=false)=
+        Parametric([ParametricPrimitive(x,y,z,f,slices,stacks,mesh)])
 
-parametric(f::Function,slices::Integer,stacks::Integer,x::Range,y::Range)=
-        Parametric([ParametricPrimitive(0mm,0mm,0mm,f,slices,stacks,x,y)])
+parametric(f::Function,slices::Integer,stacks::Integer,x::Range,y::Range; mesh::Bool=false)=
+        Parametric([ParametricPrimitive(0mm,0mm,0mm,f,slices,stacks,x,y,mesh)])
 
 function resolve(box::Absolute3DBox, parametricsurf::ParametricPrimitive)
     absorigin = resolve(box, parametricsurf.origin)
@@ -167,6 +168,7 @@ function resolve(box::Absolute3DBox, parametricsurf::ParametricPrimitive)
         parametricsurf.slices,
         parametricsurf.stacks,
         parametricsurf.xrange,
-        parametricsurf.yrange
+        parametricsurf.yrange,
+        parametricsurf.mesh
     )
 end

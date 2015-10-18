@@ -18,7 +18,7 @@ function mesh_color(color::Color)
     Material([MeshColor(color)])
 end
 
-function mesh_color(colorString::String)
+function mesh_color(colorString::AbstractString)
     Material([MeshColor(parse(Colorant, colorString))])
 end
 
@@ -31,7 +31,7 @@ function wireframe(wireframe::Bool)
 end
 
 immutable MaterialKind <: MaterialPrimitive
-    kind::String
+    kind::AbstractString
 end
 
 function normalcolors()
@@ -67,6 +67,6 @@ function edges(color::Color)
     Material([Edges(color)])
 end
 
-function edges(colorString::String="black")
+function edges(colorString::AbstractString="black")
     Material([Edges(parse(Colorant, colorString))])
 end

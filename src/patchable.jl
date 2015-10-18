@@ -45,17 +45,17 @@ typealias ThreeJSPart Elem{:xhtml,symbol("three-js-mesh")}
 #    Elem{:xhtml,symbol("three-js-light")}
 #    )
 
-addto(::Patchable3D, acc::Nothing, child::Nothing) = acc
-addto(::Patchable3D, acc::Nothing, child::Vector{Elem}) = child
-addto(::Patchable3D, acc::Vector{Elem}, child::Nothing) = acc
+addto(::Patchable3D, acc::Void, child::Void) = acc
+addto(::Patchable3D, acc::Void, child::Vector{Elem}) = child
+addto(::Patchable3D, acc::Vector{Elem}, child::Void) = acc
 addto(::Patchable3D, acc::Vector{Elem}, child::Vector{Elem}) = [ acc; child ]
 addto(::Patchable3D, acc::Vector{Elem}, child::Elem) = [ acc; child ]
-addto(::Patchable3D, acc::Nothing, child::Elem) =  Elem[child]
+addto(::Patchable3D, acc::Void, child::Elem) =  Elem[child]
 addto(::Patchable3D, 
     elem::Elem{:xhtml,symbol("three-js-mesh")},
     child::Elem{:xhtml,symbol("three-js-material")}) = 
     elem << child
-function addto(backend::Patchable3D, acc::Nothing, child::Dict)
+function addto(backend::Patchable3D, acc::Void, child::Dict)
     backend.material_tag = backend.material_tag & child
     acc
 end

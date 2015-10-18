@@ -8,7 +8,7 @@ immutable AmbientLight <: Light
     color::Color
 end
 
-ambientlight(color::String) = ambientlight(parse(Colorant, color))
+ambientlight(color::AbstractString) = ambientlight(parse(Colorant, color))
 ambientlight(color::Color=colorant"white") = AmbientLight(color)
 
 resolve(box::Absolute3DBox, light::AmbientLight) = light
@@ -29,8 +29,8 @@ pointlight(x::Length, y::Length, z::Length, color::Color=colorant"white";
     intensity::Float64=1.0, distance=0mm) =
     PointLight(x, y, z, color, intensity, distance)
 
-pointlight(x::Length, y::Length, z::Length, color::String; intensity::Float64=1.0,
-    distance=0mm) =
+pointlight(x::Length, y::Length, z::Length, color::AbstractString;
+    intensity::Float64=1.0, distance=0mm) =
     PointLight(x, y, z, parse(Colorant, color),intensity,distance)
 
 function resolve(box::Absolute3DBox, light::PointLight)
@@ -59,8 +59,9 @@ spotlight(x::Length,y::Length,z::Length,color::Color=colorant"white";
           exponent::Float64=8.0, shadow::Bool=false) =
     SpotLight(x, y, z, color, intensity, distance, angle, exponent, shadow)
 
-spotlight(x::Length,y::Length,z::Length,color::String;intensity::Float64=1.0,
-          distance=0mm,angle::Float64=60.0,exponent::Float64=8.0,shadow::Bool=false) =
+spotlight(x::Length, y::Length, z::Length, color::AbstractString;
+    intensity::Float64=1.0, distance=0mm, angle::Float64=60.0,
+    exponent::Float64=8.0, shadow::Bool=false) =
     SpotLight(x,y,z,parse(Colorant, color),intensity,distance,angle,exponent,shadow)
 
 function resolve(box::Absolute3DBox, light::SpotLight)

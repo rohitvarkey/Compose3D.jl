@@ -1,4 +1,4 @@
-using Color
+using Colors
 
 export normalcolors, lambert, basic, phong, visible, edges
 
@@ -11,19 +11,15 @@ end
 isscalar(material::Material) = length(material.primitives) == 1
 
 immutable MeshColor <: MaterialPrimitive
-    color::RGB{Float64}
+    color::Color
 end
 
-function mesh_color(color::RGB{Float64})
+function mesh_color(color::Color)
     Material([MeshColor(color)])
 end
 
-function mesh_color(color::ColorValue)
-    Material([MeshColor(convert(RGB{Float64},color))])
-end
-
 function mesh_color(colorString::String)
-    Material([MeshColor(color(colorString))])
+    Material([MeshColor(parse(Colorant, colorString))])
 end
 
 immutable WireFrameMesh <: MaterialPrimitive
@@ -64,17 +60,13 @@ function visible(visible::Bool)
 end
 
 immutable Edges <: MaterialPrimitive
-    color::RGB{Float64}
+    color::Color
 end
 
-function edges(color::RGB{Float64})
+function edges(color::Color)
     Material([Edges(color)])
 end
 
-function edges(color::ColorValue)
-    Material([Edges(convert(RGB{Float64},color))])
-end
-
 function edges(colorString::String="black")
-    Material([Edges(color(colorString))])
+    Material([Edges(parse(Colorant, colorString))])
 end

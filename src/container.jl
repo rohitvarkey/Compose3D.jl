@@ -1,12 +1,12 @@
 abstract Container <: Compose3DNode
 
 type Context <: Container
-	box :: BoundingBox #Parent box.
-	geometry_children :: List{Geometry}
-	material_children :: List{Material}
-	container_children :: List{Container}
-	light_children :: List{Light}
-	camera :: Camera
+	box::BoundingBox #Parent box.
+	geometry_children::List{Geometry}
+	material_children::List{Material}
+	container_children::List{Container}
+	light_children::List{Light}
+	camera::Union{Camera, Void}
 end
 
 Context(x0::Length,y0::Length,z0::Length,width::Length,height::Length,depth::Length) =
@@ -14,10 +14,19 @@ Context(x0::Length,y0::Length,z0::Length,width::Length,height::Length,depth::Len
 			BoundingBox(x0,y0,z0,width,height,depth),
 			ListNull{Geometry}(),
 			ListNull{Material}(),
-			ListNull{Container}()
+			ListNull{Container}(),
+			ListNull{Light}(),
+			nothing
 		)
 
-Context(ctx::Context) = Context(ctx.box,ctx.children)
+Context(ctx::Context) = Context(
+		ctx.box,
+		ctx.geometry_children,
+		ctx.material_children,
+		ctx.container_children,
+		ctx.light_children,
+		ctx.camera
+)
 
 function copy(ctx::Context)
     return Context(ctx)
@@ -112,14 +121,14 @@ end
 # properties, expanding context promises, etc. as needed.
 #
 function drawpart(backend::Backend, container::Container,
-                  parent_box::Absolute2DBox)
+                  parent_box::Absolute3DBox)
 
     # used to collect property children
     properties = Array(Material, 0)
     ctx = container
     box = resolve(parent_box, ctx.box)
 
-    child = ctx.property_children
+    child = ctx.material_children
 
     while !isa(child, ListNull)
         push!(properties, resolve(parent_box, child.head))
@@ -135,6 +144,17 @@ function drawpart(backend::Backend, container::Container,
         draw(backend, box, child.head)
         child = child.tail
     end
+
+		child = ctx.light_children
+    while !isa(child, ListNull)
+        draw(backend, box, child.head)
+        child = child.tail
+    end
+
+		if ctx.camera!=nothing
+				draw(backend, box, ctx.camera)
+		end
+
     child = ctx.container_children
     while !isa(child, ListNull)
         drawpart(backend, child.head, box)

@@ -70,3 +70,7 @@ end
 function edges(colorString::AbstractString="black")
     Material([Edges(parse(Colorant, colorString))])
 end
+
+function resolve(box::Absolute3DBox, prop::Material)
+    prop
+end

@@ -52,7 +52,7 @@ function compose!(a::Context, b::Material)
 end
 
 function compose!(a::Context, b::Light)
-    a.container_children = cons(b, a.light_children)
+    a.light_children = cons(b, a.light_children)
     return a
 end
 

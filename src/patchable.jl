@@ -270,29 +270,26 @@ function draw(img::Patchable3D, parent_box::AbsoluteBox, light::Light)
 end
 
 function draw(img::Patchable3D, light::AmbientLight)
-    color = string("#" * hex(light.color))
-    ThreeJS.ambientlight(color)
+    ThreeJS.ambientlight(light.color)
 end
 
 function draw(img::Patchable3D, light::PointLight)
-    color = string("#" * hex(light.color))
     ThreeJS.pointlight(
         light.position[1].value,
         light.position[2].value,
         light.position[3].value,
-        color=color,
+        color=light.color,
         intensity=light.intensity,
         distance=light.distance.value,
     )
 end
 
 function draw(img::Patchable3D, light::SpotLight)
-    color = string("#" * hex(light.color))
     ThreeJS.spotlight(
         light.position[1].value,
         light.position[2].value,
         light.position[3].value,
-        color=color,
+        color=light.color,
         intensity=light.intensity,
         distance=light.distance.value,
         angle=light.angle,

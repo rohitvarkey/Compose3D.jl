@@ -38,11 +38,11 @@ end
 
 #Including files.
 include("list.jl")
-include("container.jl")
 include("geometry.jl")
 include("material.jl")
 include("lights.jl")
 include("camera.jl")
+include("container.jl")
 include("patchable.jl")
 
 function writemime(io::IO, mime::MIME{symbol("text/html")}, ctx::Context)

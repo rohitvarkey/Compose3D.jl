@@ -1,99 +1,32 @@
+abstract Container <: Compose3DNode
 
-type Context <: Compose3DNode
-	box :: BoundingBox #Parent box.
-	children :: List{Compose3DNode}
+type Context <: Container
+	box::BoundingBox #Parent box.
+	geometry_children::List{Geometry}
+	material_children::List{Material}
+	container_children::List{Container}
+	light_children::List{Light}
+	camera::Union{Camera, Void}
 end
 
 Context(x0::Length,y0::Length,z0::Length,width::Length,height::Length,depth::Length) =
-    Context(BoundingBox(x0,y0,z0,width,height,depth),ListNull{Compose3DNode}())
+    Context(
+			BoundingBox(x0,y0,z0,width,height,depth),
+			ListNull{Geometry}(),
+			ListNull{Material}(),
+			ListNull{Container}(),
+			ListNull{Light}(),
+			nothing
+		)
 
-Context(ctx::Context) = Context(ctx.box,ctx.children)
-
-function draw(backend::Backend, root_canvas::Context)
-    # Does a DFS traversal of the compose tree.
-    # Checks for contexts, and geometries and resolves and draws them as needed.
-    children = root_canvas.children
-    parent_box = root_canvas.box
-    material_frame = copy(backend.material_stack[end].materials)
-    pushed_frame = false
-    @assert isa(parent_box, AbsoluteBox)
-
-    for child in children
-        if isa(child,Material)
-            material_frame[typeof(child)] = child
-        end
-    end
-    
-    if material_frame != backend.material_stack[end].materials
-        backend = push_material_frame(backend,material_frame)
-        pushed_frame = true
-    end
-
-    for child in children
-    	if isa(child,Geometry)
-    		for primitive in child.primitives
-    			backend = draw(backend,parent_box,primitive)
-    		end
-    	end
-    	if isa(child, Context)
-    		child = Context(resolve(parent_box,child.box),child.children)
-    		backend = draw(backend,child)
-    	end
-    end
-    
-    if pushed_frame
-        backend = pop_material_frame(backend)
-    end
-    
-    return backend
-end
-
-function draw_recursive(backend::Backend, root_canvas::Context)
-    # Does a DFS traversal of the compose tree.
-    # Checks for contexts, and geometries and resolves and draws them as needed.
-    children = root_canvas.children
-    parent_box = root_canvas.box
-    material = backend.material_tag
-    vector_properties = Dict{Type, Material}()
-    acc = nothing
-
-    @assert isa(parent_box, AbsoluteBox)
-
-    for child in children
-        if isa(child,Material)
-            if isscalar(child)
-               acc = addto(backend,acc,draw(backend,child))
-            else
-                vector_properties[typeof(child)] = child
-            end
-        elseif !backend.lights && isa(child, Light)
-            backend.lights = true
-        end
-    end
- 
-    pop_frame = false
-    if !isempty(vector_properties)
-        push_material_frame(backend,vector_properties)
-        pop_frame = true
-    end
-
-    for child in children
-    	if isa(child,Geometry) || isa(child, Light)
-            acc = addto(backend, acc, draw(backend, parent_box, child))
-        elseif isa(child, Context)
-    		child = Context(resolve(parent_box,child.box),child.children)
-    		acc = addto(backend, acc, draw_recursive(backend,child)) #Add order sorting before this.
-    	end
-    end
-    
-    if pop_frame
-        backend = pop_material_frame(backend)
-    end
-
-    backend.material_tag = material
-    acc
-end
-
+Context(ctx::Context) = Context(
+		ctx.box,
+		ctx.geometry_children,
+		ctx.material_children,
+		ctx.container_children,
+		ctx.light_children,
+		ctx.camera
+)
 
 function copy(ctx::Context)
     return Context(ctx)
@@ -101,8 +34,30 @@ end
 
 #Compositions.
 
-function compose!(a::Context, b::Compose3DNode)
-    a.children = cons(b, a.children)
+function compose!(a::Context, b::Container)
+    a.container_children = cons(b, a.container_children)
+    return a
+end
+
+
+function compose!(a::Context, b::Geometry)
+    a.geometry_children = cons(b, a.geometry_children)
+    return a
+end
+
+
+function compose!(a::Context, b::Material)
+    a.material_children = cons(b, a.material_children)
+    return a
+end
+
+function compose!(a::Context, b::Light)
+    a.light_children = cons(b, a.light_children)
+    return a
+end
+
+function compose!(a::Context, b::Camera)
+    a.camera = b
     return a
 end
 
@@ -152,4 +107,61 @@ end
 
 function compose(a::Context)
     return a
+end
+
+function draw(backend::Backend, root_container::Context)
+    drawpart(backend, root_container, root_box(backend))
+    finish(backend)
+end
+
+
+# Draw without finishing the backend
+#
+# Drawing is basically a depth-first traversal of the tree, pushing and popping
+# properties, expanding context promises, etc. as needed.
+#
+function drawpart(backend::Backend, container::Container,
+                  parent_box::Absolute3DBox)
+
+    # used to collect property children
+    properties = Array(Material, 0)
+    ctx = container
+    box = resolve(parent_box, ctx.box)
+
+    child = ctx.material_children
+
+    while !isa(child, ListNull)
+        push!(properties, resolve(parent_box, child.head))
+        child = child.tail
+    end
+
+    if !isempty(properties)
+        push_property_frame(backend, properties)
+    end
+
+    child = ctx.geometry_children
+    while !isa(child, ListNull)
+        draw(backend, box, child.head)
+        child = child.tail
+    end
+
+		child = ctx.light_children
+    while !isa(child, ListNull)
+        draw(backend, box, child.head)
+        child = child.tail
+    end
+
+		if ctx.camera!=nothing
+				draw(backend, box, ctx.camera)
+		end
+
+    child = ctx.container_children
+    while !isa(child, ListNull)
+        drawpart(backend, child.head, box)
+        child = child.tail
+    end
+
+    if !isempty(properties)
+        pop_property_frame(backend)
+    end
 end

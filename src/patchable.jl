@@ -99,7 +99,7 @@ end
 function finish(img::Patchable3D)
 
     if !(img.camera)
-      img.root <<= ThreeJS.camera(0.0, 30.0, 0.0)
+      img.root <<= ThreeJS.camera(30.0, 30.0, 30.0)
     end
 
     if !(img.lights)
